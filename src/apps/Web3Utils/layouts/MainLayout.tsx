@@ -4,7 +4,6 @@ import { Button, Card, Tag } from "antd";
 import Connect from "../components/Connect/Connect";
 import Wallet from "../components/Wallet/Wallet";
 import Web3Provider from "../providers/Web3Provider";
-import Notebook from "../components/Notebook/Notebook";
 import theme from "../theme";
 import Layout from "../../../common/components/Layout";
 
@@ -57,7 +56,6 @@ const MainLayout: React.FC<Props> = ({ children }) => {
           </div>
         )}
       </Layout>
-      <Notebook />
     </>
   );
 

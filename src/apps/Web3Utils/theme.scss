@@ -10,10 +10,10 @@
   }
 
   .notebook {
-    position: fixed;
+    position: absolute;
   
-    bottom: 32px;
-    right: 32px;
+    bottom: 12px;
+    right: 12px;
     width: 200px;
   
     transition: all 0.3s;

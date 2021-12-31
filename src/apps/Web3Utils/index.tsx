@@ -1,5 +1,6 @@
 import React from "react";
 import FrameGroup from "./components/Frame/FrameGroup";
+import Notebook from "./components/Notebook/Notebook";
 import Dashboard from "./frames/Dashboard";
 import MainLayout from "./layouts/MainLayout";
 import Web3ConnectProvider from "./providers/Web3ConnectProvider";
@@ -22,6 +23,8 @@ export const Web3UtilsApp: React.FC = () => {
           />
         </MainLayout>
       </Web3ConnectProvider>
+
+      <Notebook />
     </div>
   );
 };
