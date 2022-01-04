@@ -3,13 +3,16 @@ import { AppRuntime, FrameworkContext } from "./Framework";
 
 import { useDrag, useDragLayer } from "react-dnd";
 import { Button } from "antd";
-import { CloseOutlined } from "@ant-design/icons";
+import { CloseOutlined, MinusOutlined } from "@ant-design/icons";
 import { ItemTypes } from ".";
 import { getEmptyImage } from "react-dnd-html5-backend";
 
 const AppBox: React.FC<{
   runtime: AppRuntime<any>;
 }> = ({ runtime }) => {
+
+  const { setAppOpen } = React.useContext(FrameworkContext)
+
   const {
     position,
     size,
@@ -17,6 +20,7 @@ const AppBox: React.FC<{
     config: { component, title },
     props,
     insId,
+    open,
   } = runtime;
   const { terminateApp, focusApp } = React.useContext(FrameworkContext);
 
@@ -70,6 +74,10 @@ const AppBox: React.FC<{
     style.height = Math.max(0, size[1] + offset.y);
   }
 
+  if (!open) {
+    style.top = '100%';
+  }
+
   React.useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true });
   }, [preview]);
@@ -97,6 +105,7 @@ const AppBox: React.FC<{
           {title} #{insId}
         </div>
         <div>
+          <Button icon={<MinusOutlined />} size="small" onClick={() => setAppOpen({insId, open: false})} />
           <Button
             icon={<CloseOutlined />}
             size="small"

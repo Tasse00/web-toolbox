@@ -1,3 +1,12 @@
+## TODO
+- [ ] app operation: double-click set max size
+- [x] app bars: show/hide app
+- [x] app bars: launch app 
+- [x] app bars: close app / close all apps
+
+
+-----
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
