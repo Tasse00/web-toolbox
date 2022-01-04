@@ -108,7 +108,6 @@ export default function useDetectMethods(
                 } else if (isExisted(errStr)) {
                   status = 'existed';
                 } else {
-                  console.log(errStr);
                   status = 'failed';
                 }
                 dispatch({

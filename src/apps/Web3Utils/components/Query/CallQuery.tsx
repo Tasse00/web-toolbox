@@ -1,5 +1,5 @@
-import useContractCall from '../../hooks/web3/useContractCall';
-import { CloseOutlined, DownOutlined } from '@ant-design/icons';
+import useContractCall from "../../hooks/web3/useContractCall";
+import { CloseOutlined, DownOutlined } from "@ant-design/icons";
 import {
   Space,
   Button,
@@ -10,10 +10,10 @@ import {
   Row,
   Typography,
   Alert,
-} from 'antd';
-import React from 'react';
-import { useDynamicFields } from './hooks';
-import { QueryProps } from './Query';
+} from "antd";
+import React from "react";
+import { useDynamicFields } from "./hooks";
+import { QueryProps } from "./Query";
 
 const CallQuery: React.FC<QueryProps> = ({
   abi,
@@ -28,7 +28,7 @@ const CallQuery: React.FC<QueryProps> = ({
   const initialValue = React.useMemo(() => {
     const initialValue: Record<string, string> = {};
     inputs.forEach((ipt) => {
-      initialValue[ipt.name] = '';
+      initialValue[ipt.name] = "";
     });
     return initialValue;
   }, [inputs]);
@@ -54,16 +54,15 @@ const CallQuery: React.FC<QueryProps> = ({
       abi,
       options: callArgs,
     },
-    { auto: false },
+    { auto: false }
   );
-
   return (
     <Card
       size="small"
       title={
         <Space direction="horizontal">
           {abi.name}
-          <Typography.Text type="secondary">{id}</Typography.Text>{' '}
+          <Typography.Text type="secondary">{id}</Typography.Text>{" "}
         </Space>
       }
       style={style}
@@ -76,34 +75,37 @@ const CallQuery: React.FC<QueryProps> = ({
         />
       }
     >
-      <Row gutter={[16, 16]} align="middle">
-        <Col style={{ minWidth: 80 }}>
-          <Typography.Text>Inputs:</Typography.Text>
-        </Col>
-        <Col flex={1}>
-          <Row gutter={[16, 16]}>
-            {inputs.map((ipt) => (
-              <Col key={ipt.name}>
-                <Card size="small" bordered>
-                  <Row align="middle" gutter={8}>
-                    <Col>
-                      <Typography.Text>{ipt.name}</Typography.Text>
-                    </Col>
-                    <Col flex={1}>
-                      <Input
-                        style={{ width: '100%' }}
-                        placeholder={ipt.type}
-                        value={getField(ipt.name)}
-                        onChange={(e) => setField(ipt.name, e.target.value)}
-                      />
-                    </Col>
-                  </Row>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Col>
-      </Row>
+      {inputs.length > 0 && (
+        <Row gutter={[16, 16]} align="middle">
+          <Col style={{ minWidth: 80 }}>
+            <Typography.Text>Inputs:</Typography.Text>
+          </Col>
+          <Col flex={1}>
+            <Row gutter={[16, 16]}>
+              {inputs.map((ipt) => (
+                <Col key={ipt.name}>
+                  <Card size="small" bordered>
+                    <Row align="middle" gutter={8}>
+                      <Col>
+                        <Typography.Text>{ipt.name}</Typography.Text>
+                      </Col>
+                      <Col flex={1}>
+                        <Input
+                          style={{ width: "100%" }}
+                          placeholder={ipt.type}
+                          value={getField(ipt.name)}
+                          onChange={(e) => setField(ipt.name, e.target.value)}
+                        />
+                      </Col>
+                    </Row>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </Col>
+        </Row>
+      )}
+
       <Divider>
         <Button
           shape="circle"
@@ -122,23 +124,42 @@ const CallQuery: React.FC<QueryProps> = ({
           </Col>
           <Col flex={1}>
             <Row gutter={[16, 16]}>
-              {outputs.map((opt, idx) => (
-                <Col key={idx}>
+              {outputs.length === 1 && (
+                <Col>
                   <Card size="small" bordered>
                     <Row align="middle" gutter={8}>
                       <Col>
-                        <Typography.Text>{opt.type}</Typography.Text>
+                        <Typography.Text>{outputs[0].type}</Typography.Text>
                       </Col>
                       <Col>
                         <Input
-                          placeholder={opt.type}
-                          value={data ? data[idx].toString() : '--'}
+                          placeholder={outputs[0].type}
+                          value={data ? data.toString() : "--"}
                         />
                       </Col>
                     </Row>
                   </Card>
                 </Col>
-              ))}
+              )}
+
+              {outputs.length > 1 &&
+                outputs.map((opt, idx) => (
+                  <Col key={idx}>
+                    <Card size="small" bordered>
+                      <Row align="middle" gutter={8}>
+                        <Col>
+                          <Typography.Text>{opt.type}</Typography.Text>
+                        </Col>
+                        <Col>
+                          <Input
+                            placeholder={opt.type}
+                            value={data ? data.toString() : "--"}
+                          />
+                        </Col>
+                      </Row>
+                    </Card>
+                  </Col>
+                ))}
             </Row>
           </Col>
         </Row>

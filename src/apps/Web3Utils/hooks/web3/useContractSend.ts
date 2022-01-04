@@ -1,8 +1,8 @@
-import React from 'react';
-import { AbiItem } from 'web3-utils';
-import { EventData } from 'web3-eth-contract';
-import useAsync, { UseAsyncOptions, UseAsyncResult } from '../useAsync';
-import { useAccount, useContract } from '../web3';
+import React from "react";
+import { AbiItem } from "web3-utils";
+import { EventData } from "web3-eth-contract";
+import useAsync, { UseAsyncOptions, UseAsyncResult } from "../useAsync";
+import { useAccount, useContract } from "../web3";
 
 export interface UseContractSendParams<P extends any[]> {
   address: string;
@@ -27,7 +27,7 @@ export interface SendResult {
 
 export default function useContractSend<P extends any[]>(
   { address, abi, options, gas = 200000, value = 0 }: UseContractSendParams<P>,
-  asyncOptions: Omit<UseAsyncOptions<P>, 'autoParams'>,
+  asyncOptions: Omit<UseAsyncOptions<P>, "autoParams">
 ): UseAsyncResult<P, SendResult> {
   const abiArr = React.useMemo(() => [abi], [abi]);
   const contract = useContract(abiArr, address);
@@ -35,12 +35,12 @@ export default function useContractSend<P extends any[]>(
 
   const svc = React.useCallback(
     async () =>
-      await contract.methods[abi.name || ''](...(options || [])).send({
+      await contract.methods[abi.name || ""](...(options || [])).send({
         from: account,
         gas,
         value,
       }),
-    [contract, abi],
+    [contract, abi, options, account, gas, value]
   );
 
   return useAsync(svc, asyncOptions);

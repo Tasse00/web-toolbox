@@ -1,4 +1,3 @@
-import useContractCall from "../../hooks/web3/useContractCall";
 import { CloseOutlined, DownOutlined } from "@ant-design/icons";
 import {
   Space,
@@ -13,6 +12,8 @@ import {
 } from "antd";
 import React from "react";
 import { QueryProps } from "./Query";
+import useContractSend from "../../hooks/web3/useContractSend";
+import { SendResult } from "../../hooks/web3";
 
 const SendQuery: React.FC<QueryProps> = ({
   abi,
@@ -22,7 +23,6 @@ const SendQuery: React.FC<QueryProps> = ({
   onRemove,
 }) => {
   const inputs = React.useMemo(() => abi.inputs || [], [abi]);
-  const outputs = React.useMemo(() => abi.outputs || [], [abi]);
 
   const initialValue = React.useMemo(() => {
     const initialValue: Record<string, string> = {};
@@ -47,7 +47,7 @@ const SendQuery: React.FC<QueryProps> = ({
     data,
     error,
     pending: loading,
-  } = useContractCall(
+  } = useContractSend(
     {
       address: contractAddress,
       abi,
@@ -75,34 +75,37 @@ const SendQuery: React.FC<QueryProps> = ({
         />
       }
     >
-      <Row gutter={[16, 16]} align="middle">
-        <Col style={{ minWidth: 80 }}>
-          <Typography.Text>Inputs:</Typography.Text>
-        </Col>
-        <Col flex={1}>
-          <Row gutter={[16, 16]}>
-            {inputs.map((ipt) => (
-              <Col key={ipt.name}>
-                <Card size="small" bordered>
-                  <Row align="middle" gutter={8}>
-                    <Col>
-                      <Typography.Text>{ipt.name}</Typography.Text>
-                    </Col>
-                    <Col flex={1}>
-                      <Input
-                        style={{ width: "100%" }}
-                        placeholder={ipt.type}
-                        value={getField(ipt.name)}
-                        onChange={(e) => setField(ipt.name, e.target.value)}
-                      />
-                    </Col>
-                  </Row>
-                </Card>
-              </Col>
-            ))}
-          </Row>
-        </Col>
-      </Row>
+      {inputs && inputs.length > 0 && (
+        <Row gutter={[16, 16]} align="middle">
+          <Col style={{ minWidth: 80 }}>
+            <Typography.Text>Inputs:</Typography.Text>
+          </Col>
+          <Col flex={1}>
+            <Row gutter={[16, 16]}>
+              {inputs.map((ipt) => (
+                <Col key={ipt.name}>
+                  <Card size="small" bordered>
+                    <Row align="middle" gutter={8}>
+                      <Col>
+                        <Typography.Text>{ipt.name}</Typography.Text>
+                      </Col>
+                      <Col flex={1}>
+                        <Input
+                          style={{ width: "100%" }}
+                          placeholder={ipt.type}
+                          value={getField(ipt.name)}
+                          onChange={(e) => setField(ipt.name, e.target.value)}
+                        />
+                      </Col>
+                    </Row>
+                  </Card>
+                </Col>
+              ))}
+            </Row>
+          </Col>
+        </Row>
+      )}
+
       <Divider>
         <Button
           shape="circle"
@@ -114,37 +117,37 @@ const SendQuery: React.FC<QueryProps> = ({
 
       {error && <Alert type="error" message={error.message} />}
 
-      {data && data.length > 0 && (
-        <Row gutter={[16, 16]} align="middle">
-          <Col style={{ minWidth: 80 }}>
-            <Typography.Text>Outputs:</Typography.Text>
-          </Col>
-          <Col flex={1}>
-            <Row gutter={[16, 16]}>
-              {outputs.map((opt, idx) => (
-                <Col key={idx}>
-                  <Card size="small" bordered>
-                    <Row align="middle" gutter={8}>
-                      <Col>
-                        <Typography.Text>{opt.type}</Typography.Text>
-                      </Col>
-                      <Col>
-                        <Input
-                          placeholder={opt.type}
-                          value={data ? data[idx].toString() : "--"}
-                        />
-                      </Col>
-                    </Row>
-                  </Card>
-                </Col>
-              ))}
-            </Row>
-          </Col>
-        </Row>
-      )}
+      {data && <SendResultView result={data} />}
     </Card>
   );
 };
+
+const SendResultView: React.FC<{ result: SendResult }> = ({ result }) => (
+  <div>
+    {[
+      { label: "BlockNumber", value: result.blockNumber },
+      { label: "BlockHash", value: result.blockHash },
+      { label: "TxHash", value: result.transactionHash },
+      { label: "TxIdx", value: result.transactionIndex },
+      { label: "GasUsed", value: result.gasUsed },
+      { label: "Events", value: Object.keys(result.events).length },
+    ].map(({ label, value }) => (
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div>{label}</div>
+        <div
+          style={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            color: "rgba(100, 100, 100, 0.8)",
+          }}
+        >
+          {value}
+        </div>
+      </div>
+    ))}
+  </div>
+);
 
 function useDynamicFields(initialValue: Record<string, any>) {
   const [store, setStore] = React.useState(initialValue);
