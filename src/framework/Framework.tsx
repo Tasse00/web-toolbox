@@ -1,9 +1,9 @@
 import React from "react";
-import AppBox from "./AppBox";
 import Layout from "../common/components/Layout";
 import Bar from "./Bar";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
+import AppContainer from "./AppContainer";
 
 const PanelStyle: React.CSSProperties = {
   border: "1px solid rgba(100, 100, 100, 0.5)",
@@ -43,7 +43,6 @@ const Framework: React.FC<{
     (payload) => dispatch({ type: "FOCUS_APP", payload }),
     [dispatch]
   );
-  console.log("App Num: ", apps.length);
 
   return (
     <FrameworkContext.Provider
@@ -66,9 +65,7 @@ const Framework: React.FC<{
           style={{ height: "100vh", width: "100vw" }}
           contentStyle={{ position: "relative", overflow: "hidden" }}
         >
-          {apps.map((app) => (
-            <AppBox key={app.insId} runtime={app} />
-          ))}
+          <AppContainer />
           {children}
         </Layout>
       </DndProvider>

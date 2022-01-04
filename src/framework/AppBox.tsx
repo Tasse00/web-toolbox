@@ -1,75 +1,50 @@
 import React from "react";
 import { AppRuntime, FrameworkContext } from "./Framework";
 
-import { useDrag } from "react-dnd";
+import { useDrag, useDragLayer } from "react-dnd";
 import { Button } from "antd";
 import { CloseOutlined } from "@ant-design/icons";
-
-const ItemTypes = {
-  App: "app",
-  ResizeIcon: "resize-icon",
-};
+import { ItemTypes } from ".";
+import { getEmptyImage } from "react-dnd-html5-backend";
 
 const AppBox: React.FC<{
   runtime: AppRuntime<any>;
-}> = ({
-  runtime: {
+}> = ({ runtime }) => {
+  const {
     position,
     size,
     order,
     config: { component, title },
     props,
     insId,
-  },
-}) => {
-  const { moveApp, resizeApp, terminateApp, focusApp } =
-    React.useContext(FrameworkContext);
+  } = runtime;
+  const { terminateApp, focusApp } = React.useContext(FrameworkContext);
 
-  const moveDragRef = useDrag(
+  const [{ isDragging: isDraggingPos }, moveDragRef, preview] = useDrag(
     () => ({
       type: ItemTypes.App,
-      item: { insId, position },
-      end: (_, monitor) => {
-        const { insId, position } = monitor.getItem();
-        const { x: xo, y: yo } = monitor.getDifferenceFromInitialOffset() || {
-          x: 0,
-          y: 0,
-        };
-        const newPosition: [number, number] = [
-          position[0] + xo,
-          position[1] + yo,
-        ];
-        moveApp({
-          insId,
-          position: newPosition,
-        });
-      },
+      item: runtime,
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
     }),
-    [insId, position]
-  )[1];
+    [runtime]
+  );
 
-  const resizeDragRef = useDrag(
+  const [{ isDragging: isDraggingSize }, resizeDragRef] = useDrag(
     () => ({
       type: ItemTypes.ResizeIcon,
-      item: { insId, size },
-      end: (_, monitor) => {
-        const { insId, size } = monitor.getItem();
-        const { x: xo, y: yo } = monitor.getDifferenceFromInitialOffset() || {
-          x: 0,
-          y: 0,
-        };
-        const newSize: [number, number] = [
-          Math.max(size[0] + xo, 64),
-          Math.max(size[1] + yo, 64),
-        ];
-        resizeApp({
-          insId,
-          size: newSize,
-        });
-      },
+      item: runtime,
+      collect: (monitor) => ({
+        isDragging: monitor.isDragging(),
+      }),
     }),
-    [insId, size]
-  )[1];
+    [runtime]
+  );
+
+  const { offset } = useDragLayer((monitor) => ({
+    offset: monitor.getDifferenceFromInitialOffset() || { x: 0, y: 0 },
+  }));
 
   const style: React.CSSProperties = {
     position: "absolute",
@@ -77,16 +52,35 @@ const AppBox: React.FC<{
     left: position[0],
     width: size[0],
     height: size[1],
-    zIndex: order,
+    zIndex: order, // 配合拖动效果
+
+    display: "flex",
+    flexDirection: "column",
 
     border: "1px solid rgba(100, 100, 100, 0.2)",
     background: "rgba(255,255,255,1)",
   };
 
-  const Com = component;
+  if (isDraggingPos) {
+    style.top = position[1] + offset.y;
+    style.left = position[0] + offset.x;
+  }
+  if (isDraggingSize) {
+    style.width = Math.max(0, size[0] + offset.x);
+    style.height = Math.max(0, size[1] + offset.y);
+  }
+
+  React.useEffect(() => {
+    preview(getEmptyImage(), { captureDraggingState: true });
+  }, [preview]);
+
+  const com = React.useMemo(() => {
+    const Com = component;
+    return <Com {...props} />;
+  }, [component, props]);
 
   return (
-    <div style={style} onClick={() => focusApp({ insId })}>
+    <div style={style} onMouseDown={() => focusApp({ insId })}>
       <div
         style={{
           width: "100%",
@@ -95,7 +89,7 @@ const AppBox: React.FC<{
           alignItems: "center",
           borderBottom: "1px solid rgba(100, 100, 100, 0.2)",
           background: "rgba(200, 200, 200, 0.2)",
-          overflow: 'auto',
+          overflow: "auto",
         }}
         ref={moveDragRef}
       >
@@ -110,6 +104,9 @@ const AppBox: React.FC<{
           />
         </div>
       </div>
+      <div style={{ position: "relative", flex: 1, overflow: "hidden" }}>
+        {com}
+      </div>
       <div
         ref={resizeDragRef}
         style={{
@@ -121,8 +118,7 @@ const AppBox: React.FC<{
           background: "rgba(200, 200, 200, 0.2)",
           cursor: "se-resize",
         }}
-      ></div>
-      <Com {...props} />
+      />
     </div>
   );
 };

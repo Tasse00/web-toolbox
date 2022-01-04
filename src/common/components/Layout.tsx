@@ -46,7 +46,7 @@ const Layout: React.FC<{
       {!!top ? top : undefined}
     </div>
   );
-  console.log("Layout children: ",children);
+
   return (
     <div
       style={{
