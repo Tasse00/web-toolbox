@@ -1,17 +1,23 @@
 import React from "react";
-import { AppRuntime, FrameworkContext } from "./Framework";
+import { AppRuntime } from "./Framework";
 
-import { useDrag, useDragLayer } from "react-dnd";
+import { useDrag, XYCoord } from "react-dnd";
 import { Button } from "antd";
 import { CloseOutlined, MinusOutlined } from "@ant-design/icons";
 import { ItemTypes } from ".";
 import { getEmptyImage } from "react-dnd-html5-backend";
+import { AppContext } from "./AppContext";
+
+const ZERO_OFFSET = { x: 0, y: 0 };
 
 const AppBox: React.FC<{
   runtime: AppRuntime<any>;
-}> = ({ runtime }) => {
+  dragOffset?: XYCoord;
+}> = ({ runtime, dragOffset = ZERO_OFFSET }) => {
 
-  const { setAppOpen } = React.useContext(FrameworkContext)
+  const {
+    control: { setOpen, terminate, focus },
+  } = React.useContext(AppContext);
 
   const {
     position,
@@ -22,7 +28,6 @@ const AppBox: React.FC<{
     insId,
     open,
   } = runtime;
-  const { terminateApp, focusApp } = React.useContext(FrameworkContext);
 
   const [{ isDragging: isDraggingPos }, moveDragRef, preview] = useDrag(
     () => ({
@@ -46,9 +51,7 @@ const AppBox: React.FC<{
     [runtime]
   );
 
-  const { offset } = useDragLayer((monitor) => ({
-    offset: monitor.getDifferenceFromInitialOffset() || { x: 0, y: 0 },
-  }));
+  const offset = dragOffset;
 
   const style: React.CSSProperties = {
     position: "absolute",
@@ -75,7 +78,7 @@ const AppBox: React.FC<{
   }
 
   if (!open) {
-    style.top = '100%';
+    style.top = "100%";
   }
 
   React.useEffect(() => {
@@ -86,9 +89,8 @@ const AppBox: React.FC<{
     const Com = component;
     return <Com {...props} />;
   }, [component, props]);
-
   return (
-    <div style={style} onMouseDown={() => focusApp({ insId })}>
+    <div style={style} onMouseDown={focus}>
       <div
         style={{
           width: "100%",
@@ -105,11 +107,15 @@ const AppBox: React.FC<{
           {title} #{insId}
         </div>
         <div>
-          <Button icon={<MinusOutlined />} size="small" onClick={() => setAppOpen({insId, open: false})} />
+          <Button
+            icon={<MinusOutlined />}
+            size="small"
+            onClick={() => setOpen({ open: false })}
+          />
           <Button
             icon={<CloseOutlined />}
             size="small"
-            onClick={() => terminateApp({ insId })}
+            onClick={() => terminate()}
           />
         </div>
       </div>

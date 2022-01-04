@@ -265,10 +265,16 @@ function reducer(state: State, action: Action): State {
       if (idx < 0) {
         return state;
       }
-      state.apps[idx] = { ...state.apps[idx], order: state.nextOrder };
+      const maxOrder = Math.max(...state.apps.map(a=>a.order));
+      if (maxOrder === state.apps[idx].order) {
+        return state;
+      }
+      const updatedApps = [...state.apps];
+      updatedApps[idx] = { ...updatedApps[idx], order: state.nextOrder }
+      
       return {
         ...state,
-        apps: [...state.apps],
+        apps: updatedApps,
         nextOrder: state.nextOrder + 1,
       };
     }
