@@ -14,9 +14,9 @@ const AppBox: React.FC<{
   runtime: AppRuntime<any>;
   dragOffset?: XYCoord;
 }> = ({ runtime, dragOffset = ZERO_OFFSET }) => {
-
   const {
-    control: { setOpen, terminate, focus },
+    control: { setOpen, terminate, focus, resize, move },
+    container,
   } = React.useContext(AppContext);
 
   const {
@@ -66,6 +66,7 @@ const AppBox: React.FC<{
 
     border: "1px solid rgba(100, 100, 100, 0.2)",
     background: "rgba(255,255,255,1)",
+    transition: (isDraggingPos||isDraggingSize) ? undefined : 'all 0.2s'
   };
 
   if (isDraggingPos) {
@@ -89,8 +90,32 @@ const AppBox: React.FC<{
     const Com = component;
     return <Com {...props} />;
   }, [component, props]);
+
+  const [prevLoc, setPrevLoc] = React.useState<{
+    position: [number, number];
+    size: [number, number];
+  } | null>(null);
+
+  const resizeMax = React.useCallback(() => {
+    setPrevLoc({ position, size });
+    resize({ size: [container.width, container.height] });
+    move({ position: [0, 0] });
+  }, [resize, move, position, size, container]);
+
+  const resizeMin = React.useCallback(() => {
+    setPrevLoc(null);
+    if (prevLoc) {
+      resize({ size: prevLoc.size });
+      move({ position: prevLoc.position });
+    }
+  }, [resize, move, prevLoc]);
+
   return (
-    <div style={style} onMouseDown={focus}>
+    <div
+      style={style}
+      onMouseDown={focus}
+      onDoubleClick={prevLoc ? resizeMin : resizeMax}
+    >
       <div
         style={{
           width: "100%",

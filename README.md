@@ -1,8 +1,9 @@
 ## TODO
-- [ ] app operation: double-click set max size
+- [x] app operation: double-click set max size
 - [x] app bars: show/hide app
 - [x] app bars: launch app 
 - [x] app bars: close app / close all apps
+- [ ] app instance title control
 
 
 -----

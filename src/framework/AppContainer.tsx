@@ -13,7 +13,7 @@ import {
 const ZERO_OFFSET = { x: 0, y: 0 };
 
 const AppContainer: React.FC = () => {
-  const { apps, moveApp, resizeApp, focusApp, setAppOpen, terminateApp } =
+  const { apps, size, moveApp, resizeApp, focusApp, setAppOpen, terminateApp } =
     React.useContext(FrameworkContext);
 
   const [, drop] = useDrop(
@@ -72,6 +72,7 @@ const AppContainer: React.FC = () => {
         setAppOpen,
         moveApp,
         focusApp,
+        size,
       },
     }))
   );
@@ -104,6 +105,7 @@ const AppBoxWithAppContext: React.FC<
   moveApp,
   focusApp,
   setAppOpen,
+  size,
 }) => {
   const insId = runtime.insId;
 
@@ -142,8 +144,12 @@ const AppBoxWithAppContext: React.FC<
         setOpen,
         focus,
       },
+      container: {
+        width: size[0],
+        height: size[1],
+      },
     }),
-    [runtime, terminate, resize, move, setOpen, focus]
+    [runtime, terminate, resize, move, setOpen, focus, size]
   );
 
   return (

@@ -3,7 +3,10 @@ import { AppRuntime } from "./Framework";
 
 export interface AppContextProps<T> {
   runtime: AppRuntime<T>;
-
+  container: {
+    width: number;
+    height: number;
+  };
   control: {
     terminate: () => void;
     setOpen: (params: { open: boolean }) => void;
@@ -23,11 +26,15 @@ export const AppContext = React.createContext<AppContextProps<any>>({
     props: {},
     open: false,
   },
+  container: {
+    width: 0,
+    height: 0,
+  },
   control: {
-    terminate: () => {},
-    setOpen: () => {},
-    focus: () => {},
-    resize: () => {},
-    move: () => {},
+    terminate: () => { },
+    setOpen: () => { },
+    focus: () => { },
+    resize: () => { },
+    move: () => { },
   },
 });

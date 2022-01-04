@@ -43,7 +43,15 @@ const Framework: React.FC<{
     (payload) => dispatch({ type: "FOCUS_APP", payload }),
     [dispatch]
   );
+  const ref = React.useRef<HTMLDivElement>(null);
 
+  // TODO unable to listen to resize event.
+  const layoutDom = ref.current;
+  const size = React.useMemo<[number, number]>(
+    () =>
+      layoutDom ? [layoutDom.clientWidth, layoutDom.clientHeight] : [0, 0],
+    [layoutDom]
+  );
   return (
     <FrameworkContext.Provider
       value={{
@@ -55,6 +63,7 @@ const Framework: React.FC<{
         setAppOpen,
         configs,
         apps,
+        size,
       }}
     >
       <DndProvider backend={HTML5Backend}>
@@ -63,10 +72,19 @@ const Framework: React.FC<{
           barPosition="bottom"
           barStyle={PanelStyle}
           style={{ height: "100vh", width: "100vw" }}
-          contentStyle={{ position: "relative", overflow: "hidden" }}
         >
-          <AppContainer />
-          {children}
+          <div
+            ref={ref}
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "relative",
+              overflow: "hidden",
+            }}
+          >
+            <AppContainer />
+            {children}
+          </div>
         </Layout>
       </DndProvider>
     </FrameworkContext.Provider>
@@ -83,6 +101,7 @@ export interface FrameworkContextValue {
 
   configs: State["configs"];
   apps: State["apps"];
+  size: [number, number];
 }
 
 export const FrameworkContext = React.createContext<FrameworkContextValue>({
@@ -95,6 +114,7 @@ export const FrameworkContext = React.createContext<FrameworkContextValue>({
 
   configs: [],
   apps: [],
+  size: [0, 0],
 });
 
 export interface AppConfig<Props = {}> {
@@ -265,13 +285,12 @@ function reducer(state: State, action: Action): State {
       if (idx < 0) {
         return state;
       }
-      const maxOrder = Math.max(...state.apps.map(a=>a.order));
+      const maxOrder = Math.max(...state.apps.map((a) => a.order));
       if (maxOrder === state.apps[idx].order) {
         return state;
       }
       const updatedApps = [...state.apps];
-      updatedApps[idx] = { ...updatedApps[idx], order: state.nextOrder }
-      
+      updatedApps[idx] = { ...updatedApps[idx], order: state.nextOrder };
       return {
         ...state,
         apps: updatedApps,
