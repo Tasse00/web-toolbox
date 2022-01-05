@@ -144,7 +144,6 @@ const AppBox: React.FC<{
 
     display: "flex",
     flexDirection: "column",
-    overflow: 'visible',
 
     border: "1px solid rgba(100, 100, 100, 0.2)",
     background: "rgba(255,255,255,1)",
@@ -208,11 +207,7 @@ const AppBox: React.FC<{
   }, [resize, move, prevLoc]);
 
   return (
-    <div
-      style={style}
-      onMouseDown={focus}
-      onDoubleClick={prevLoc ? resizeMin : resizeMax}
-    >
+    <div style={style} onMouseDown={focus}>
       <div
         style={{
           width: "100%",
@@ -223,6 +218,7 @@ const AppBox: React.FC<{
           background: "rgba(200, 200, 200, 0.2)",
           overflow: "auto",
         }}
+        onDoubleClick={prevLoc ? resizeMin : resizeMax}
         ref={moveDragRef}
       >
         <div>{title}</div>
@@ -242,10 +238,7 @@ const AppBox: React.FC<{
       <div style={{ position: "relative", flex: 1, overflow: "hidden" }}>
         {com}
       </div>
-      <div
-        ref={resizeDragRef}
-        className="appbox-resize-icon"
-      />
+      <div ref={resizeDragRef} className="appbox-resize-icon" />
 
       <div
         ref={rightResizeDragRef}
