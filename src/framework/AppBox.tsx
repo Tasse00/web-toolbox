@@ -26,7 +26,6 @@ const AppBox: React.FC<{
     order,
     config: { component, title },
     props,
-    insId,
     open,
   } = runtime;
 

@@ -8,7 +8,7 @@ import {
   MinusOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { appendFile } from "fs";
+
 const Bar: React.FC<{}> = (props) => {
   const { configs, launchApp, apps } = React.useContext(FrameworkContext);
   const cols = React.useMemo(
@@ -19,7 +19,7 @@ const Bar: React.FC<{}> = (props) => {
             onLaunch={() =>
               launchApp({
                 appId: conf.appId,
-                props: {},
+                props: { ...conf.defaultProps },
                 insId: Math.random().toString(),
               })
             }

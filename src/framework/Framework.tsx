@@ -43,6 +43,10 @@ const Framework: React.FC<{
     (payload) => dispatch({ type: "FOCUS_APP", payload }),
     [dispatch]
   );
+  const setAppInsTitle = React.useCallback(
+    (payload) => dispatch({ type: "UPDATE_APP_INS_TITLE", payload }),
+    [dispatch]
+  );
   const ref = React.useRef<HTMLDivElement>(null);
 
   // TODO unable to listen to resize event.
@@ -61,6 +65,7 @@ const Framework: React.FC<{
         resizeApp,
         focusApp,
         setAppOpen,
+        setAppInsTitle,
         configs,
         apps,
         size,
@@ -98,6 +103,7 @@ export interface FrameworkContextValue {
   moveApp: (args: ActMoveApp["payload"]) => void;
   resizeApp: (args: ActResizeApp["payload"]) => void;
   focusApp: (args: ActFocusOpen["payload"]) => void;
+  setAppInsTitle: (args: ActUpdateAppInsTitle["payload"]) => void;
 
   configs: State["configs"];
   apps: State["apps"];
@@ -111,6 +117,7 @@ export const FrameworkContext = React.createContext<FrameworkContextValue>({
   moveApp: () => {},
   resizeApp: () => {},
   focusApp: () => {},
+  setAppInsTitle: () => {},
 
   configs: [],
   apps: [],
@@ -121,11 +128,13 @@ export interface AppConfig<Props = {}> {
   appId: string;
   title: string;
   component: React.FC<Props>;
+  defaultProps: Props;
 }
 
 export interface AppRuntime<Props = {}> {
   insId: string;
   config: AppConfig<Props>;
+  title: string | null; // 运行时Title
   props: Props; // App 参数
   open: boolean; // App 是否打开
   order: number; // 显示顺序，数字越大显示在最前方
@@ -195,13 +204,22 @@ interface ActFocusOpen {
   };
 }
 
+interface ActUpdateAppInsTitle {
+  type: "UPDATE_APP_INS_TITLE";
+  payload: {
+    insId: string;
+    title: string;
+  };
+}
+
 type Action =
   | ActLaunchApp
   | ActTerminateApp
   | ActSetAppOpen
   | ActMoveApp
   | ActResizeApp
-  | ActFocusOpen;
+  | ActFocusOpen
+  | ActUpdateAppInsTitle;
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -225,6 +243,7 @@ function reducer(state: State, action: Action): State {
         config: { ...config },
         props,
         open,
+        title: null,
         position,
         size,
         order: state.nextOrder,
@@ -295,6 +314,22 @@ function reducer(state: State, action: Action): State {
         ...state,
         apps: updatedApps,
         nextOrder: state.nextOrder + 1,
+      };
+    }
+    case "UPDATE_APP_INS_TITLE": {
+      const { insId, title } = action.payload;
+      const idx = state.apps.findIndex((app) => app.insId === insId);
+      if (idx < 0) {
+        return state;
+      }
+      if (title === state.apps[idx].title) {
+        return state;
+      }
+      const updatedApps = [...state.apps];
+      updatedApps[idx] = { ...updatedApps[idx], title };
+      return {
+        ...state,
+        apps: updatedApps,
       };
     }
     default: {

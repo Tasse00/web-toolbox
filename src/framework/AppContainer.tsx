@@ -13,8 +13,16 @@ import {
 const ZERO_OFFSET = { x: 0, y: 0 };
 
 const AppContainer: React.FC = () => {
-  const { apps, size, moveApp, resizeApp, focusApp, setAppOpen, terminateApp } =
-    React.useContext(FrameworkContext);
+  const {
+    apps,
+    size,
+    moveApp,
+    resizeApp,
+    focusApp,
+    setAppOpen,
+    terminateApp,
+    setAppInsTitle,
+  } = React.useContext(FrameworkContext);
 
   const [, drop] = useDrop(
     () => ({
@@ -85,7 +93,7 @@ const AppContainer: React.FC = () => {
           const newPosition: [number, number] = [position[0], position[1] + yo];
           resizeApp({ insId, size: newSize });
           moveApp({ insId, position: newPosition });
-        }else if (monitor.getItemType() === ItemTypes.BottomBorderResize) {
+        } else if (monitor.getItemType() === ItemTypes.BottomBorderResize) {
           const newSize: [number, number] = [
             size[0],
             Math.max(size[1] + yo, 64),
@@ -120,6 +128,7 @@ const AppContainer: React.FC = () => {
         setAppOpen,
         moveApp,
         focusApp,
+        setAppInsTitle,
         size,
       },
     }))
@@ -381,6 +390,7 @@ const AppBoxWithAppContext: React.FC<
   moveApp,
   focusApp,
   setAppOpen,
+  setAppInsTitle,
   size,
 }) => {
   const insId = runtime.insId;
@@ -410,6 +420,13 @@ const AppBoxWithAppContext: React.FC<
     focusApp({ insId });
   }, [insId, focusApp]);
 
+  const setTitle = React.useCallback(
+    (opts: { title: string }) => {
+      setAppInsTitle({ insId, title: opts.title });
+    },
+    [insId, setAppInsTitle]
+  );
+
   const props = React.useMemo(
     () => ({
       runtime,
@@ -419,13 +436,14 @@ const AppBoxWithAppContext: React.FC<
         move,
         setOpen,
         focus,
+        setTitle,
       },
       container: {
         width: size[0],
         height: size[1],
       },
     }),
-    [runtime, terminate, resize, move, setOpen, focus, size]
+    [runtime, terminate, resize, move, setOpen, focus, setTitle, size]
   );
 
   return (
