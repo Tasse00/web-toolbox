@@ -27,7 +27,6 @@ const Wallet: React.FC<{}> = (props) => {
   } = useBalance(defaultAccount, { auto: true });
   const balanceReadable = useMemo(() => {
     if (pending || error || !balance) {
-      console.log(error, balance);
       return 0;
     } else {
       const res = BigInt(balance) / BigInt("100000000000000");

@@ -257,7 +257,7 @@ function reducer(state: State, action: Action): State {
 
       return {
         ...state,
-        apps: [...state.apps, runtime],
+        apps: [runtime, ...state.apps],
         nextOrder: state.nextOrder + 1,
       };
     }

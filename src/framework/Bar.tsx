@@ -1,8 +1,13 @@
-import { Button, Card, List, Dropdown } from "antd";
-import React from "react";
-import { FrameworkContext } from "./Framework";
+import { Button } from "antd";
+import React, { useEffect } from "react";
+import { AppRuntime, FrameworkContext } from "./Framework";
 import Layout from "../common/components/Layout";
-import { CloseOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
+import { CloseOutlined } from "@ant-design/icons";
+import "./Bar.scss";
+
+function formatId(runtime: AppRuntime<any>): string {
+  return `ins-bar.${runtime.insId}`;
+}
 
 const Bar: React.FC<{}> = (props) => {
   const { apps, terminateApp, setAppOpen, focusApp } =
@@ -12,20 +17,40 @@ const Bar: React.FC<{}> = (props) => {
     ...apps.filter((app) => app.open).map((app) => app.order)
   );
 
-  // TODO 左右布局
+  useEffect(() => {
+    const app = apps.find((app) => app.order === maxVisibleOrder);
+    if (app) {
+      const id = formatId(app);
+      const elem = document.getElementById(id);
+      if (elem) {
+        //// will make appbox drag, resize wrong
+        // TODO Why??
+        // elem.scrollIntoView({ inline: "nearest", behavior: "smooth" });
+        setTimeout(
+          () => elem.scrollIntoView({ inline: "nearest", behavior: "smooth" }),
+          0
+        );
+      }
+    }
+  }, [maxVisibleOrder, apps]);
+
   return (
     <Layout
       style={{ height: 40, userSelect: "none" }}
       sidePosition="right"
+      contentClassName="framework-bar"
       contentStyle={{
         display: "flex",
         alignItems: "center",
         height: "100%",
         width: "100%",
+        paddingRight: 4,
       }}
     >
       {apps.map((app) => (
         <div
+          key={app.insId}
+          id={formatId(app)}
           style={{
             height: 32,
             border: "1px solid rgb(200,200,200)",
@@ -33,11 +58,14 @@ const Bar: React.FC<{}> = (props) => {
             display: "flex",
             alignItems: "center",
             paddingLeft: 8,
-            background: "rgba(255,255,255,1)",
+            // background: "rgba(255,255,255,1)",
+            background:
+              maxVisibleOrder === app.order
+                ? "rgba(200,200,200,0.4)"
+                : "rgba(255,255,255,0.2)",
             cursor: "pointer",
           }}
           onClick={() => {
-            console.log(app.open, app.order, maxVisibleOrder);
             if (!app.open || maxVisibleOrder !== app.order) {
               setAppOpen({ insId: app.insId, open: true });
               setTimeout(() => {
@@ -63,79 +91,4 @@ const Bar: React.FC<{}> = (props) => {
   );
 };
 
-const InstanceList: React.FC = (props) => {
-  const { apps, setAppOpen, terminateApp, focusApp } =
-    React.useContext(FrameworkContext);
-
-  return (
-    <Card size="small">
-      <List
-        style={{ width: 200 }}
-        rowKey={(app) => (app ? app.insId : "clear")}
-        dataSource={apps.length > 0 ? [...apps, null] : []}
-        renderItem={(app) =>
-          app ? (
-            <List.Item
-              onClick={() => {
-                if (!app.open) {
-                  setAppOpen({ insId: app.insId, open: true });
-                }
-                focusApp({ insId: app.insId });
-              }}
-              extra={
-                <>
-                  {app.open ? (
-                    <Button
-                      type="text"
-                      icon={<MinusOutlined />}
-                      size="small"
-                      onClick={() =>
-                        setAppOpen({ insId: app.insId, open: false })
-                      }
-                    />
-                  ) : (
-                    <Button
-                      type="text"
-                      icon={<PlusOutlined />}
-                      size="small"
-                      onClick={() =>
-                        setAppOpen({ insId: app.insId, open: true })
-                      }
-                    />
-                  )}
-                  <Button
-                    type="text"
-                    icon={<CloseOutlined />}
-                    size="small"
-                    onClick={() => terminateApp({ insId: app.insId })}
-                  />
-                </>
-              }
-            >
-              <List.Item.Meta
-                title={app.config.title}
-                description={app.insId}
-              />
-            </List.Item>
-          ) : (
-            <List.Item>
-              <Button
-                size="small"
-                block
-                type="text"
-                onClick={() => {
-                  for (let app of apps) {
-                    terminateApp({ insId: app.insId });
-                  }
-                }}
-              >
-                Clear All
-              </Button>
-            </List.Item>
-          )
-        }
-      />
-    </Card>
-  );
-};
 export default Bar;

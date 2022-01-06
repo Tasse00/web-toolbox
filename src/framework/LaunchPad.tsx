@@ -22,7 +22,7 @@ const LaunchPad: React.FC<{
       style={{ ...FullscreenStyle, zIndex, pointerEvents, opacity }}
       onClick={() => setVisible(false)}
     >
-      <div style={ContainerStyle} onClick={() => console.log("dd")}>
+      <div style={ContainerStyle}>
         {configs.map((conf) => (
           <AppLaunchIcon
             key={conf.appId}
