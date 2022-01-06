@@ -1,5 +1,5 @@
-import { useAccount, useAccounts, useWeb3Control } from '../../hooks/web3';
-import React from 'react';
+import { useAccount, useAccounts, useWeb3Control } from "../../hooks/web3";
+import React, { useMemo } from "react";
 import {
   Row,
   Col,
@@ -10,28 +10,55 @@ import {
   Button,
   message,
   Tooltip,
-} from 'antd';
-import { CopyOutlined } from '@ant-design/icons';
-import { copyToClipboard } from '../../utils/copy';
+} from "antd";
+import { CopyOutlined } from "@ant-design/icons";
+import { copyToClipboard } from "../../utils/copy";
+import { useBalance } from "../../hooks/web3/useBalance";
+import BN from "bn.js";
 
 const Wallet: React.FC<{}> = (props) => {
   const accounts = useAccounts();
   const defaultAccount = useAccount();
   const { setAccount } = useWeb3Control();
-
+  const {
+    data: balance,
+    pending,
+    error,
+  } = useBalance(defaultAccount, { auto: true });
+  const balanceReadable = useMemo(() => {
+    if (pending || error || !balance) {
+      console.log(error, balance);
+      return 0;
+    } else {
+      const res = BigInt(balance) / BigInt("100000000000000");
+      return parseFloat(res.toString()) / 10000;
+    }
+  }, [balance, error, pending]);
   return (
-    <Row gutter={[8, 8]} style={{ width: '100%' }}>
+    <Row
+      gutter={[8, 8]}
+      style={{ width: "100%" }}
+      justify="space-between"
+      align="middle"
+    >
       <Col>
         <Title>Default Account</Title>
       </Col>
       <Col>
         <Select
-          style={{ width: '100%' }}
+          style={{ width: "100%" }}
           options={accounts.map((acc) => ({ value: acc }))}
-          value={defaultAccount || ''}
-          onSelect={(v)=>setAccount(v.toString())}
+          value={defaultAccount || ""}
+          onSelect={(v) => setAccount(v.toString())}
         />
       </Col>
+      <Col span={24}>
+        <Row justify="space-between">
+          <Col>Balance</Col>
+          <Col>{pending || error ? "--" : balanceReadable}</Col>
+        </Row>
+      </Col>
+
       <Col>
         <Title>Accounts</Title>
       </Col>
@@ -51,7 +78,7 @@ const Wallet: React.FC<{}> = (props) => {
                   type="text"
                   onClick={() => {
                     copyToClipboard(acc);
-                    message.success({ content: 'Copied' });
+                    message.success({ content: "Copied" });
                   }}
                 />
               </List.Item>
