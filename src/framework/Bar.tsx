@@ -1,98 +1,65 @@
-import { Button, Card, List, Dropdown, Tooltip } from "antd";
+import { Button, Card, List, Dropdown } from "antd";
 import React from "react";
-import { AppConfig, FrameworkContext } from "./Framework";
+import { FrameworkContext } from "./Framework";
 import Layout from "../common/components/Layout";
-import {
-  CloseOutlined,
-  MenuOutlined,
-  MinusOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
+import { CloseOutlined, MinusOutlined, PlusOutlined } from "@ant-design/icons";
 
 const Bar: React.FC<{}> = (props) => {
-  const { configs, launchApp, apps } = React.useContext(FrameworkContext);
-  const cols = React.useMemo(
-    () =>
-      configs.map((conf) => (
-        <div key={conf.appId} style={{ marginRight: 8 }}>
-          <AppLaunchIcon
-            onLaunch={() =>
-              launchApp({
-                appId: conf.appId,
-                props: { ...conf.defaultProps },
-                insId: Math.random().toString(),
-              })
-            }
-            config={conf}
-          />
-        </div>
-      )),
-    [configs, launchApp]
+  const { apps, terminateApp, setAppOpen, focusApp } =
+    React.useContext(FrameworkContext);
+
+  const maxVisibleOrder = Math.max(
+    ...apps.filter((app) => app.open).map((app) => app.order)
   );
 
   // TODO 左右布局
   return (
     <Layout
-      style={{ height: 64 }}
+      style={{ height: 40, userSelect: "none" }}
       sidePosition="right"
-      side={
+      contentStyle={{
+        display: "flex",
+        alignItems: "center",
+        height: "100%",
+        width: "100%",
+      }}
+    >
+      {apps.map((app) => (
         <div
           style={{
+            height: 32,
+            border: "1px solid rgb(200,200,200)",
+            marginLeft: 4,
             display: "flex",
             alignItems: "center",
-            height: "100%",
-            width: "100%",
+            paddingLeft: 8,
+            background: "rgba(255,255,255,1)",
+            cursor: "pointer",
+          }}
+          onClick={() => {
+            console.log(app.open, app.order, maxVisibleOrder);
+            if (!app.open || maxVisibleOrder !== app.order) {
+              setAppOpen({ insId: app.insId, open: true });
+              setTimeout(() => {
+                focusApp({ insId: app.insId });
+              }, 0);
+            } else {
+              setAppOpen({ insId: app.insId, open: false });
+            }
           }}
         >
-          <Dropdown overlay={<InstanceList />} placement="topRight">
-            <Button icon={<MenuOutlined />} type="text" size="large">
-              {apps.length}
-            </Button>
-          </Dropdown>
+          <div>{app.title || app.config.title}</div>
+          <div>
+            <Button
+              icon={<CloseOutlined size={12} />}
+              size="small"
+              type="text"
+              onClick={() => terminateApp({ insId: app.insId })}
+            />
+          </div>
         </div>
-      }
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          height: "100%",
-          width: "100%",
-          padding: "0 8px",
-        }}
-      >
-        {cols}
-      </div>
+      ))}
     </Layout>
-  );
-};
-
-const AppLaunchIcon: React.FC<{ config: AppConfig; onLaunch: () => void }> = ({
-  config,
-  onLaunch,
-}) => {
-  const size = "48px";
-
-  return (
-    <Tooltip title={config.title}>
-      <div
-        style={{
-          width: size,
-          height: size,
-          lineHeight: size,
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-
-          borderRadius: 8,
-          backgroundColor: "rgba(200, 200, 200, 0.5)",
-          cursor: "pointer",
-        }}
-        onClick={onLaunch}
-      >
-        {config.title}
-      </div>
-    </Tooltip>
   );
 };
 

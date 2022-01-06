@@ -4,6 +4,7 @@ import Bar from "./Bar";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import AppContainer from "./AppContainer";
+import LaunchPad from "./LaunchPad";
 
 const PanelStyle: React.CSSProperties = {
   border: "1px solid rgba(100, 100, 100, 0.5)",
@@ -13,7 +14,7 @@ const PanelStyle: React.CSSProperties = {
 const Framework: React.FC<{
   defaultConfigs: AppConfig[];
 }> = ({ children, defaultConfigs }) => {
-  const [{ apps, configs }, dispatch] = React.useReducer(reducer, {
+  const [{ apps, configs, nextOrder }, dispatch] = React.useReducer(reducer, {
     configs: defaultConfigs,
     apps: [],
     nextOrder: 1,
@@ -88,6 +89,11 @@ const Framework: React.FC<{
             }}
           >
             <AppContainer />
+            <LaunchPad
+              zIndex={nextOrder}
+              configs={configs}
+              launchApp={launchApp}
+            />
             {children}
           </div>
         </Layout>
