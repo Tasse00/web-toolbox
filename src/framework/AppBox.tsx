@@ -13,8 +13,9 @@ const ZERO_OFFSET = { x: 0, y: 0 };
 
 const AppBox: React.FC<{
   runtime: AppRuntime<any>;
-  dragOffset?: XYCoord;
-}> = ({ runtime, dragOffset = ZERO_OFFSET }) => {
+  dragOffset?: XYCoord; // move to app context?
+  focused: boolean; // move to app context?
+}> = ({ runtime, dragOffset = ZERO_OFFSET, focused }) => {
   const {
     control: { setOpen, terminate, focus, resize, move },
     container,
@@ -134,6 +135,7 @@ const AppBox: React.FC<{
     isDraggingLeftBorder ||
     isDraggingTopBorder ||
     isDraggingBottomBorder;
+
   const style: React.CSSProperties = {
     position: "absolute",
     top: position[1],
@@ -147,7 +149,14 @@ const AppBox: React.FC<{
 
     border: "1px solid rgba(100, 100, 100, 0.2)",
     background: "rgba(255,255,255,1)",
-    transition: isDragging ? undefined : "all 0.2s",
+    transitionProperty: isDragging
+      ? "none"
+      : "opacity, top, width, height, left",
+    transitionDuration: "0.2s",
+    transitionTimingFunction: "linear",
+    // transition: isDragging
+    //   ? undefined
+    //   : "opacity, top, width, height, left 0.2s",
   };
 
   // TODO preview
@@ -175,7 +184,10 @@ const AppBox: React.FC<{
   }
 
   if (!open) {
-    style.top = "100%";
+    // @ts-ignore top must
+    style.top += 100;
+    style.opacity = 0;
+    style.pointerEvents = "none";
   }
 
   React.useEffect(() => {
@@ -215,7 +227,9 @@ const AppBox: React.FC<{
           justifyContent: "space-between",
           alignItems: "center",
           borderBottom: "1px solid rgba(100, 100, 100, 0.2)",
-          background: "rgba(200, 200, 200, 0.2)",
+          background: focused
+            ? "rgba(200, 200, 200, 0.4)"
+            : "rgba(200, 200, 200, 0.2)",
           overflow: "auto",
         }}
         onDoubleClick={prevLoc ? resizeMin : resizeMax}

@@ -1,6 +1,6 @@
 import React from "react";
 import { useDragLayer, useDrop, XYCoord } from "react-dnd";
-import { DragItemApp, DragItemResizeIcon, ItemTypes } from ".";
+import { DragItemApp, ItemTypes } from ".";
 import { useCachedArrayRender } from "../common/hooks/render";
 import AppBox from "./AppBox";
 import { AppContext } from "./AppContext";
@@ -9,6 +9,7 @@ import {
   FrameworkContext,
   FrameworkContextValue,
 } from "./Framework";
+import "./LayoutPosition.scss";
 
 const ZERO_OFFSET = { x: 0, y: 0 };
 
@@ -34,10 +35,7 @@ const AppContainer: React.FC = () => {
         ItemTypes.TopBorderResize,
         ItemTypes.BottomBorderResize,
       ],
-      drop(
-        { insId, position, size }: DragItemApp | DragItemResizeIcon,
-        monitor
-      ) {
+      drop({ insId, position, size }: AppRuntime<any>, monitor) {
         const { x: xo, y: yo } = monitor.getDifferenceFromInitialOffset() || {
           x: 0,
           y: 0,
@@ -116,6 +114,11 @@ const AppContainer: React.FC = () => {
     dragInsId: monitor.getItem()?.insId || "",
   }));
 
+  const maxOrder = React.useMemo(
+    () => Math.max(...apps.map((app) => app.order), 0),
+    [apps]
+  );
+
   const elems = useCachedArrayRender(
     AppBoxWithAppContext,
     apps.map((app) => ({
@@ -130,13 +133,9 @@ const AppContainer: React.FC = () => {
         focusApp,
         setAppInsTitle,
         size,
+        focused: app.order === maxOrder,
       },
     }))
-  );
-
-  const maxOrder = React.useMemo(
-    () => Math.max(...apps.map((app) => app.order)),
-    [apps]
   );
 
   const layoutPositionPropsElems = useLayoutPositionElems(
@@ -171,144 +170,70 @@ function useLayoutPositionElems(
 ) {
   return React.useMemo(() => {
     const zIndex = maxOrder + 1;
-    const props: (LayoutPositionProps & { key: string })[] = [
+    const props: (Omit<
+      LayoutPositionProps,
+      "style" | "className" | "isDragging" | "resizeApp" | "moveApp"
+    > & { key: string })[] = [
       {
         key: "left",
-        style: {
-          left: 0,
-          marginTop: -32,
-          height: 64,
-          width: 32,
-          top: "50%",
-          zIndex,
-        },
-        isDragging,
         targetSize: [size[0] / 2, size[1]],
         targetPosition: [0, 0],
-        resizeApp,
-        moveApp,
         tip: "To Left",
       },
       {
         key: "right",
-        style: {
-          right: 0,
-          marginTop: -32,
-          height: 64,
-          width: 32,
-          top: "50%",
-          zIndex,
-        },
-        isDragging,
         targetSize: [size[0] / 2, size[1]],
         targetPosition: [size[0] / 2, 0],
-        resizeApp,
-        moveApp,
         tip: "To Right",
       },
       {
         key: "top",
-        style: {
-          top: 0,
-          left: "50%",
-          marginLeft: -32,
-          height: 32,
-          width: 64,
-          zIndex,
-        },
-        isDragging,
         targetSize: [size[0], size[1] / 2],
         targetPosition: [0, 0],
-        resizeApp,
-        moveApp,
         tip: "To Top",
       },
       {
         key: "bottom",
-        style: {
-          bottom: 0,
-          left: "50%",
-          marginLeft: -32,
-          height: 32,
-          width: 64,
-          zIndex,
-        },
-        isDragging,
         targetSize: [size[0], size[1] / 2],
         targetPosition: [0, size[1] / 2],
-        resizeApp,
-        moveApp,
         tip: "To Bottom",
       },
-
       {
         key: "lefttop",
-        style: {
-          top: 0,
-          left: 0,
-          height: 32,
-          width: 32,
-          zIndex,
-        },
-        isDragging,
         targetSize: [size[0] / 2, size[1] / 2],
         targetPosition: [0, 0],
-        resizeApp,
-        moveApp,
         tip: "To LT",
       },
-
       {
         key: "righttop",
-        style: {
-          top: 0,
-          right: 0,
-          height: 32,
-          width: 32,
-          zIndex,
-        },
-        isDragging,
         targetSize: [size[0] / 2, size[1] / 2],
         targetPosition: [size[0] / 2, 0],
-        resizeApp,
-        moveApp,
         tip: "To RT",
       },
 
       {
         key: "leftbottom",
-        style: {
-          bottom: 0,
-          left: 0,
-          height: 32,
-          width: 32,
-          zIndex,
-        },
-        isDragging,
         targetSize: [size[0] / 2, size[1] / 2],
         targetPosition: [0, size[1] / 2],
-        resizeApp,
-        moveApp,
         tip: "To LB",
       },
       {
         key: "rightbottom",
-        style: {
-          bottom: 0,
-          right: 0,
-          height: 32,
-          width: 32,
-          zIndex,
-        },
-        isDragging,
         targetSize: [size[0] / 2, size[1] / 2],
         targetPosition: [size[0] / 2, size[1] / 2],
-        resizeApp,
-        moveApp,
         tip: "To RB",
       },
     ];
-    return props.map((props) => <LayoutPosition {...props} />);
+    return props.map((props) => (
+      <LayoutPosition
+        {...props}
+        isDragging={isDragging}
+        style={{ zIndex }}
+        resizeApp={resizeApp}
+        moveApp={moveApp}
+        className={`layout-position-${props.key}`}
+      />
+    ));
   }, [isDragging, size, resizeApp, moveApp, maxOrder]);
 }
 
@@ -316,6 +241,7 @@ interface LayoutPositionProps {
   style: React.CSSProperties;
   isDragging: boolean;
   targetSize: [number, number];
+  className: string;
   targetPosition: [number, number];
   resizeApp: FrameworkContextValue["resizeApp"];
   moveApp: FrameworkContextValue["moveApp"];
@@ -327,6 +253,7 @@ const LayoutPosition: React.FC<LayoutPositionProps> = ({
   isDragging,
   targetSize,
   targetPosition,
+  className,
   resizeApp,
   moveApp,
   tip = "",
@@ -337,50 +264,53 @@ const LayoutPosition: React.FC<LayoutPositionProps> = ({
       collect: (monitor) => ({
         isHover: monitor.isOver(),
       }),
-      drop({ insId }: DragItemApp) {
+      drop({ insId, position }: DragItemApp, monitor) {
+        // 1. move to current drag position;
+        const { x: xo, y: yo } =
+          monitor.getDifferenceFromInitialOffset() as XYCoord;
+        const newPosition: [number, number] = [
+          position[0] + xo,
+          position[1] + yo,
+        ];
+        moveApp({
+          insId,
+          position: newPosition,
+        });
+
         setTimeout(() => {
-          // 2. async resize & move
+          // 2. async resize & move, for css transition animation
           moveApp({ insId, position: targetPosition });
           resizeApp({ insId, size: targetSize });
         }, 0);
-        // for animation
-        // 1. move position to here
-        return true;
+
+        return undefined;
       },
     }),
     [moveApp, resizeApp, targetPosition, targetSize]
   );
 
   if (!isDragging) {
-    return null;
-  } else {
-    return (
-      <div
-        ref={dropRef}
-        style={{
-          position: "absolute",
-          backgroundColor: isHover
-            ? "rgba(100,200,100,0.5)"
-            : "rgba(200,200,200,0.5)",
-          transition: "all 0.2s",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          textAlign: "center",
-          fontSize: 12,
-          ...style,
-        }}
-      >
-        {tip}
-      </div>
-    );
+    style["opacity"] = 0;
+    style["pointerEvents"] = "none";
+    style.zIndex = 0;
   }
+
+  return (
+    <div
+      ref={dropRef}
+      className={`${className} ${isHover ? className + "-hover" : ""}`}
+      style={style}
+    >
+      {tip}
+    </div>
+  );
 };
 
 const AppBoxWithAppContext: React.FC<
   {
     runtime: AppRuntime<any>;
     dragOffset: XYCoord;
+    focused: boolean;
   } & Omit<FrameworkContextValue, "apps" | "configs" | "launchApp">
 > = ({
   runtime,
@@ -391,6 +321,7 @@ const AppBoxWithAppContext: React.FC<
   focusApp,
   setAppOpen,
   setAppInsTitle,
+  focused,
   size,
 }) => {
   const insId = runtime.insId;
@@ -448,7 +379,7 @@ const AppBoxWithAppContext: React.FC<
 
   return (
     <AppContext.Provider value={props}>
-      <AppBox runtime={runtime} dragOffset={dragOffset} />
+      <AppBox runtime={runtime} dragOffset={dragOffset} focused={focused} />
     </AppContext.Provider>
   );
 };

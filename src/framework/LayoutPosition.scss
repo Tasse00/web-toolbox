@@ -1,0 +1,112 @@
+@mixin layout-position {
+  position: absolute;
+
+  transition: all 0.2s;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-size: 12px;
+
+  background: rgba(200, 200, 200, 0.5);
+  &-hover {
+    background: rgba(100, 200, 100, 0.5);
+  }
+}
+
+$short-size: 48px;
+$long-size: 96px;
+$radius-size: 8px 8px;
+
+.layout-position-top {
+  @include layout-position;
+
+  top: 0;
+  left: 50%;
+  margin-left: -$long-size / 2;
+  height: $short-size;
+  width: $long-size;
+
+  border-bottom-left-radius: $radius-size;
+  border-bottom-right-radius: $radius-size;
+}
+
+.layout-position-bottom {
+  @include layout-position;
+
+  bottom: 0;
+  left: 50%;
+  margin-left: -$long-size / 2;
+  height: $short-size;
+  width: $long-size;
+
+  border-top-left-radius: $radius-size;
+  border-top-right-radius: $radius-size;
+}
+
+.layout-position-left {
+  @include layout-position;
+
+  top: 50%;
+  left: 0;
+  margin-top: -$long-size / 2;
+  height: $long-size;
+  width: $short-size;
+
+  border-top-right-radius: $radius-size;
+  border-bottom-right-radius: $radius-size;
+}
+
+.layout-position-right {
+  @include layout-position;
+  top: 50%;
+  right: 0;
+  margin-top: -$long-size / 2;
+  height: $long-size;
+  width: $short-size;
+
+  border-top-left-radius: $radius-size;
+  border-bottom-left-radius: $radius-size;
+}
+
+.layout-position-lefttop {
+  @include layout-position;
+
+  top: 0;
+  left: 0;
+  height: $short-size;
+  width: $short-size;
+
+  border-bottom-right-radius: $radius-size;
+}
+.layout-position-leftbottom {
+  @include layout-position;
+
+  bottom: 0;
+  left: 0;
+  height: $short-size;
+  width: $short-size;
+
+  border-top-right-radius: $radius-size;
+}
+.layout-position-righttop {
+  @include layout-position;
+
+  top: 0;
+  right: 0;
+  height: $short-size;
+  width: $short-size;
+
+  border-bottom-left-radius: $radius-size;
+}
+.layout-position-rightbottom {
+  @include layout-position;
+
+  bottom: 0;
+  right: 0;
+  height: $short-size;
+  width: $short-size;
+
+  border-top-left-radius: $radius-size;
+}

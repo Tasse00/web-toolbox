@@ -3,10 +3,10 @@ import { AppRuntime } from "./Framework";
 export const ItemTypes = {
   App: "app",
   ResizeIcon: "resize-icon",
-  RightBorderResize: 'right-border-resize',
-  LeftBorderResize: 'left-border-resize',
-  TopBorderResize: 'top-border-resize',
-  BottomBorderResize: 'bottom-border-resize',
+  RightBorderResize: "right-border-resize",
+  LeftBorderResize: "left-border-resize",
+  TopBorderResize: "top-border-resize",
+  BottomBorderResize: "bottom-border-resize",
 };
 
 export type DragItemApp = AppRuntime<any>;
