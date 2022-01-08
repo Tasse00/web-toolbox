@@ -7,6 +7,8 @@
 - [x] app instance title control
 - [x] app border resize
 - [ ] manual set title
+- [ ] split border resize to a component
+-
 
 ---
 

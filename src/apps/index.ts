@@ -1,5 +1,6 @@
 import { AppConfig } from "../framework/Framework";
 import { JsonViewApp } from "./JsonView";
+import TestApp from "./TestApp";
 import { Web3UtilsApp } from "./Web3Utils";
 
 const configs: AppConfig<any>[] = [
@@ -13,6 +14,12 @@ const configs: AppConfig<any>[] = [
     appId: "json-viewer",
     title: "JsonViewer",
     component: JsonViewApp,
+    defaultProps: {},
+  },
+  {
+    appId: "test",
+    title: "TEST",
+    component: TestApp,
     defaultProps: {},
   },
 ];
