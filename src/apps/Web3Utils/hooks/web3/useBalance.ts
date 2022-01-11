@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { Web3State } from "../../providers/Web3Provider";
 import useAsync, { UseAsyncOptions } from "../useAsync";
 import { useWeb3State } from "../web3";

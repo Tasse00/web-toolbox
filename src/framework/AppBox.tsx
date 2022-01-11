@@ -25,9 +25,10 @@ const AppBox: React.FC<{
     position,
     size,
     order,
-    config: { component, title },
+    config: { component, title: appTitle },
     props,
     open,
+    title,
   } = runtime;
 
   const [{ isDragging: isDraggingPos }, moveDragRef, preview] = useDrag(
@@ -235,8 +236,18 @@ const AppBox: React.FC<{
         onDoubleClick={prevLoc ? resizeMin : resizeMax}
         ref={moveDragRef}
       >
-        <div>{title}</div>
-        <div>
+        <div
+          style={{
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+          }}
+        >
+          {title || appTitle}
+        </div>
+        <div
+          style={{ display: "flex", flexWrap: "nowrap", alignItems: "center" }}
+        >
           <Button
             icon={<MinusOutlined />}
             size="small"

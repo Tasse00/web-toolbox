@@ -41,8 +41,10 @@ const AppContainer: React.FC = () => {
           y: 0,
         };
         if (monitor.getItemType() === ItemTypes.App) {
-          const { x: xo, y: yo } =
-            monitor.getDifferenceFromInitialOffset() as XYCoord;
+          const { x: xo, y: yo } = monitor.getDifferenceFromInitialOffset() || {
+            x: 0,
+            y: 0,
+          };
           const newPosition: [number, number] = [
             position[0] + xo,
             position[1] + yo,
@@ -352,7 +354,7 @@ const AppBoxWithAppContext: React.FC<
   }, [insId, focusApp]);
 
   const setTitle = React.useCallback(
-    (opts: { title: string }) => {
+    (opts: { title: string | null }) => {
       setAppInsTitle({ insId, title: opts.title });
     },
     [insId, setAppInsTitle]

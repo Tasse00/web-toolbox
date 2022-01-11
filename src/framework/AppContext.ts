@@ -13,7 +13,7 @@ export interface AppContextProps<T> {
     focus: () => void;
     resize: (params: { size: [number, number] }) => void;
     move: (params: { position: [number, number] }) => void;
-    setTitle: (params: { title: string }) => void;
+    setTitle: (params: { title: string | null }) => void;
   };
 }
 

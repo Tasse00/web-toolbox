@@ -14,7 +14,6 @@ import {
 import { CopyOutlined } from "@ant-design/icons";
 import { copyToClipboard } from "../../utils/copy";
 import { useBalance } from "../../hooks/web3/useBalance";
-import BN from "bn.js";
 
 const Wallet: React.FC<{}> = (props) => {
   const accounts = useAccounts();
