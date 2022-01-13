@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { AppContext } from "../../framework/AppContext";
+import { useAppConfig } from "../../framework/ConfigProvider";
 
 const ROWS = 4;
 const COLS = 4;
@@ -52,8 +53,11 @@ const Game2048App: React.FC<{}> = () => {
   const [score, setScore] = useState(0);
   const [focused, setFocused] = useState(false);
 
-  const color = DEFAULT_COLOR;
-  const chance4 = 0.5;
+  const { loading: loadingChance4, value: chance4 } = useAppConfig(
+    "chance4",
+    0.5
+  );
+  const { value: color } = useAppConfig("color", DEFAULT_COLOR);
 
   const ref = useHotkeys<HTMLDivElement>(
     "up,left,right,down,w,a,s,d",
@@ -143,7 +147,7 @@ const Game2048App: React.FC<{}> = () => {
       randomGenerate(blocks, chance4);
       setBlocks([...blocks]);
     },
-    {},
+    { enabled: !loadingChance4 },
     [blocks, setBlocks, chance4]
   );
 
@@ -180,6 +184,25 @@ const Game2048App: React.FC<{}> = () => {
             color={color}
           />
         ))
+      )}
+      {loadingChance4 && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            background: "rgb(200,200,200)",
+            opacity: 0.8,
+            fontSize: 32,
+          }}
+        >
+          Loading
+        </div>
       )}
     </div>
   );
