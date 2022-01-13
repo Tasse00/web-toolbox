@@ -5,6 +5,7 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import AppContainer from "./AppContainer";
 import LaunchPad from "./LaunchPad";
+import ConfigProvider from "./ConfigProvider";
 
 const PanelStyle: React.CSSProperties = {
   border: "1px solid rgba(100, 100, 100, 0.5)",
@@ -73,30 +74,32 @@ const Framework: React.FC<{
       }}
     >
       <DndProvider backend={HTML5Backend}>
-        <Layout
-          bar={<Bar />}
-          barPosition="bottom"
-          barStyle={PanelStyle}
-          style={{ height: "100vh", width: "100vw" }}
-        >
-          <div
-            ref={ref}
-            style={{
-              width: "100%",
-              height: "100%",
-              position: "relative",
-              overflow: "hidden",
-            }}
+        <ConfigProvider>
+          <Layout
+            bar={<Bar />}
+            barPosition="bottom"
+            barStyle={PanelStyle}
+            style={{ height: "100vh", width: "100vw" }}
           >
-            <AppContainer />
-            <LaunchPad
-              zIndex={nextOrder}
-              configs={configs}
-              launchApp={launchApp}
-            />
-            {children}
-          </div>
-        </Layout>
+            <div
+              ref={ref}
+              style={{
+                width: "100%",
+                height: "100%",
+                position: "relative",
+                overflow: "hidden",
+              }}
+            >
+              <AppContainer />
+              <LaunchPad
+                zIndex={nextOrder}
+                configs={configs}
+                launchApp={launchApp}
+              />
+              {children}
+            </div>
+          </Layout>
+        </ConfigProvider>
       </DndProvider>
     </FrameworkContext.Provider>
   );
@@ -214,7 +217,7 @@ interface ActUpdateAppInsTitle {
   type: "UPDATE_APP_INS_TITLE";
   payload: {
     insId: string;
-    title: string;
+    title: string | null;
   };
 }
 

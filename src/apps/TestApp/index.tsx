@@ -1,12 +1,10 @@
 import React from "react";
-import {
-  TestPersistentProvider,
-  usePersistent,
-} from "../../framework/persistent/context";
+import { usePersistent } from "../../common/providers/persistent/context";
+import { LocalPersistentProvider } from "../../common/providers/persistent/LocalPersistentProvider";
 
 const ShowKey: React.FC<{ kp: string }> = ({ kp }) => {
-  const { loading, value } = usePersistent(kp, "NOKEY:" + kp);
-
+  const { loading, value: _value } = usePersistent(kp);
+  const value = _value || "NOKEY:" + kp;
   return (
     <div style={{ display: "flex" }}>
       <div
@@ -20,8 +18,7 @@ const ShowKey: React.FC<{ kp: string }> = ({ kp }) => {
 };
 
 const SetKey: React.FC<{ kp: string; value: any }> = ({ kp, value }) => {
-  const { update } = usePersistent(kp, "NOKEY:" + kp);
-
+  const { update } = usePersistent(kp);
   return (
     <div style={{ display: "flex" }}>
       <div
@@ -36,7 +33,7 @@ const SetKey: React.FC<{ kp: string; value: any }> = ({ kp, value }) => {
 
 const TestApp: React.FC<{}> = (props) => {
   return (
-    <TestPersistentProvider>
+    <LocalPersistentProvider key="__test_persistent" mockDelay={300}>
       <div style={{ width: "100%", height: "100%" }}>
         <ShowKey kp="" />
         <SetKey kp="" value={{}} />
@@ -51,7 +48,7 @@ const TestApp: React.FC<{}> = (props) => {
         <ShowKey kp="address.street" />
         <SetKey kp="address.street" value={"No.2"} />
       </div>
-    </TestPersistentProvider>
+    </LocalPersistentProvider>
   );
 };
 
