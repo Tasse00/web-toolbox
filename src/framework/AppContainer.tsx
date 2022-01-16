@@ -111,7 +111,7 @@ const AppContainer: React.FC = () => {
   );
 
   const { isDragging, offset, dragInsId } = useDragLayer((monitor) => ({
-    isDragging: monitor.isDragging(),
+    isDragging: ItemTypes.App === monitor.getItemType() && monitor.isDragging(),
     offset: monitor.getDifferenceFromInitialOffset() || ZERO_OFFSET,
     dragInsId: monitor.getItem()?.insId || "",
   }));

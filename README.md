@@ -8,7 +8,7 @@
 - [x] app border resize
 - [ ] manual set title
 - [ ] split border resize to a component
--
+- [ ] add app VCD
 
 ---
 
