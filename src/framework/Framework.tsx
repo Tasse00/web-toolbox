@@ -138,6 +138,7 @@ export interface AppConfig<Props = {}> {
   title: string;
   component: React.FC<Props>;
   defaultProps: Props;
+  suggestSize?: [number, number];
 }
 
 export interface AppRuntime<Props = {}> {
@@ -245,6 +246,10 @@ function reducer(state: State, action: Action): State {
       const config = state.configs.find((conf) => conf.appId === appId);
       if (config === undefined) {
         return state;
+      }
+      if (!action.payload.size && config.suggestSize) {
+        size[0] = config.suggestSize[0];
+        size[1] = config.suggestSize[1];
       }
 
       const runtime: AppRuntime<any> = {

@@ -1,4 +1,5 @@
 import { AppConfig } from "../framework/Framework";
+import { ClipbardAppConfig } from "./Clipboard";
 import Game2048App from "./Game2048";
 import { JsonViewApp } from "./JsonView";
 import SettingsApp from "./Settings";
@@ -36,6 +37,7 @@ const configs: AppConfig<any>[] = [
     component: SettingsApp,
     defaultProps: {},
   },
+  ClipbardAppConfig,
 ];
 
 export default configs;
