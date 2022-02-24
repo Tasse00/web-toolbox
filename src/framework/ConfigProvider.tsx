@@ -70,11 +70,12 @@ export function useAppConfig<T>(key: string, defaultValue: T) {
   } = useContext(AppContext);
   const persistentKey = appId + (key ? `.${key}` : "");
   const { loading, value, update } = usePersistent<T>(persistentKey);
-  useEffect(() => {
-    if (value === undefined) {
-      update(defaultValue);
-    }
-  }, [value, defaultValue, update]);
+  // useEffect(() => {
+  //   if (value === undefined) {
+  //     console.log("set", defaultValue);
+  //     update(defaultValue);
+  //   }
+  // }, [value, defaultValue, update]);
   return {
     loading,
     update,
