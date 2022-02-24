@@ -3,8 +3,6 @@ import { Button, Drawer, Form, Input, Skeleton } from "antd";
 import React, { useState } from "react";
 import { useAppConfig } from "../../../framework/ConfigProvider";
 
-const DefaultIdentity = "#" + Math.round(Math.random() * 1000).toString();
-
 const Settings: React.FC<{
   visible: boolean;
   onClose: () => void;
@@ -13,7 +11,7 @@ const Settings: React.FC<{
     value: identity,
     update: updateIdentity,
     loading: loadingIdentity,
-  } = useAppConfig("identity", DefaultIdentity);
+  } = useAppConfig("identity", "");
 
   const {
     value: signalingServerUrl,
@@ -56,17 +54,25 @@ const Settings: React.FC<{
       ) : (
         <Form
           form={form}
+          requiredMark={false}
           layout="vertical"
           initialValues={{ identity, signalingServerUrl }}
           onValuesChange={() => {
             const v = form.getFieldsValue();
             const canSave =
-              v.identity !== identity ||
-              v.signalingServerUrl !== signalingServerUrl;
+              (v.identity !== identity ||
+                v.signalingServerUrl !== signalingServerUrl) &&
+              v.identity &&
+              v.signalingServerUrl;
             setCanSave(canSave);
           }}
         >
-          <Form.Item shouldUpdate label="Identification" name="identity">
+          <Form.Item
+            shouldUpdate
+            label="Identification"
+            name="identity"
+            rules={[{ required: true }]}
+          >
             <Input placeholder="This Device ID" />
           </Form.Item>
 

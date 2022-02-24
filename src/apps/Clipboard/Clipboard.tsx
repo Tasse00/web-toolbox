@@ -219,7 +219,7 @@ const Clipboard: React.FC<{}> = () => {
       </Layout>
 
       <SettingsDrawer
-        visible={settingsDrawerVis}
+        visible={settingsDrawerVis || !identity || !signalingServerUrl}
         onClose={() => setSettingsDrawerVis(false)}
       />
 
