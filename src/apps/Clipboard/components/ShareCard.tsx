@@ -1,13 +1,16 @@
-import { CopyOutlined } from "@ant-design/icons";
+import { CopyOutlined, DownloadOutlined } from "@ant-design/icons";
 import { Button, notification, Typography } from "antd";
 import React from "react";
 import { copyToClipboard } from "../../../common/utils/clipboard";
-import { ShareWithPeer } from "../hooks";
+import { useAppConfig } from "../../../framework/ConfigProvider";
+import { PeersManagerState, ShareWithPeer } from "../hooks";
 
 const ShareCard: React.FC<{
   share: ShareWithPeer;
   style?: React.CSSProperties;
-}> = ({ share, style }) => {
+  onDownload: PeersManagerState["fetchFile"];
+}> = ({ share, style, onDownload }) => {
+  const { value: identity } = useAppConfig("identity", "");
   return (
     <div key={share.timestamp} style={style}>
       <div
@@ -20,18 +23,34 @@ const ShareCard: React.FC<{
         <div>
           <Typography.Text> {share.identity}</Typography.Text>
         </div>
-        <div>
-          <Button
-            icon={<CopyOutlined />}
-            onClick={() => {
-              copyToClipboard(share.content).then(() =>
-                notification.success({
-                  message: "copied",
-                })
-              );
-            }}
-          />
-        </div>
+        {share.type === "text" ? (
+          <div>
+            <Button
+              icon={<CopyOutlined />}
+              type="text"
+              onClick={() => {
+                copyToClipboard(share.content).then(() =>
+                  notification.success({
+                    message: "copied",
+                  })
+                );
+              }}
+            />
+          </div>
+        ) : (
+          <div>
+            {share.identity !== identity && (
+              <Button
+                type="text"
+                icon={<DownloadOutlined />}
+                onClick={() => {
+                  console.log("download", share);
+                  onDownload(share);
+                }}
+              />
+            )}
+          </div>
+        )}
       </div>
       <div
         style={{
@@ -41,7 +60,13 @@ const ShareCard: React.FC<{
           borderRadius: 16,
         }}
       >
-        <pre style={{ marginBottom: 0 }}>{share.content}</pre>
+        {share.type === "text" ? (
+          <pre style={{ marginBottom: 0 }}>{share.content}</pre>
+        ) : (
+          <div>
+            File: {share.id} | {share.name}
+          </div>
+        )}
       </div>
     </div>
   );

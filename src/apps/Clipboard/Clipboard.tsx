@@ -1,6 +1,6 @@
-import { SettingOutlined } from "@ant-design/icons";
-import { Button, Card } from "antd";
-import React, { useCallback, useEffect, useState } from "react";
+import { FileOutlined, SettingOutlined } from "@ant-design/icons";
+import { Button, Card, Col, Row } from "antd";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import Layout from "../../common/components/Layout";
 import SettingsDrawer from "./components/SettingsDrawer";
 import useWebSocket from "react-use-websocket";
@@ -10,6 +10,8 @@ import WebsocketStatus from "./components/sidebar/WebsocketStatus";
 import ShareCard from "./components/ShareCard";
 import PeersDrawer from "./components/PeersDrawer";
 import PeersStatus from "./components/sidebar/PeersStatus";
+import DownloadsIcon from "./components/topbar/DownloadsIcon";
+import DownloadsDrawer from "./components/DownloadsDrawer";
 
 // 信令: 推送房间内成员
 interface SSEMembers {
@@ -66,6 +68,9 @@ const Clipboard: React.FC<{}> = () => {
   const [peersDrawerVis, setPeersDrawerVis] = useState(false);
   const [settingsDrawerVis, setSettingsDrawerVis] = useState(false);
 
+  // Modal开关
+  const [downloadsDrawerVis, setDownloadsDrawerVis] = useState(false);
+
   // 配置
   const { value: signalingServerUrl } = useAppConfig("signalingServerUrl", "");
   const { value: identity } = useAppConfig("identity", "");
@@ -121,6 +126,10 @@ const Clipboard: React.FC<{}> = () => {
 
     shares,
     peers,
+    downloads,
+
+    provideFiles,
+    fetchFile,
   } = usePeersManager({
     sendToSignalingServer: sendToSignalingServer,
     identity: identity,
@@ -158,6 +167,8 @@ const Clipboard: React.FC<{}> = () => {
     createPeer,
     removePeer,
   ]);
+
+  const iptFileRef = useRef<HTMLInputElement>(null);
 
   return (
     <div style={{ width: "100%", height: "100%" }}>
@@ -198,24 +209,79 @@ const Clipboard: React.FC<{}> = () => {
           </Card>
         }
       >
-        <div
-          style={{ minHeight: "100%" }}
-          onPaste={(e) => {
-            const content = e.clipboardData.getData("text/plain");
-            share({
-              type: "text",
-              content,
-            });
-          }}
+        <Layout
+          bar={
+            <Card size="small">
+              <Row justify="space-between">
+                <Col>
+                  <Button
+                    size="large"
+                    type="text"
+                    icon={<FileOutlined />}
+                    onClick={() => {
+                      iptFileRef.current?.click();
+                    }}
+                  >
+                    <input
+                      ref={iptFileRef}
+                      type="file"
+                      style={{ display: "none" }}
+                      onChange={(e) => {
+                        // 1. 存储至PM文件提供器
+                        const files = [];
+                        if (e.target.files) {
+                          for (let i = 0; i < e.target.files.length; i++) {
+                            files.push(e.target.files[i]);
+                          }
+                        }
+                        const providedFiles = provideFiles(files);
+
+                        // 2. 使用PM广播文件消息`
+                        for (const file of providedFiles) {
+                          share({
+                            type: "file",
+                            name: file.name,
+                            id: file.id,
+                            size: file.file.size,
+                          });
+                        }
+                      }}
+                    />
+                  </Button>
+                </Col>
+                <Col>
+                  <DownloadsIcon
+                    downloads={downloads}
+                    onClick={() => setDownloadsDrawerVis(true)}
+                  />
+                </Col>
+              </Row>
+            </Card>
+          }
         >
-          {shares.map((s) => (
-            <ShareCard
-              key={s.timestamp}
-              share={s}
-              style={{ margin: "16px 32px" }}
-            />
-          ))}
-        </div>
+          <div
+            style={{ height: "100%", overflow: "auto" }}
+            onPaste={(e) => {
+              const content = e.clipboardData.getData("text/plain");
+              share({
+                type: "text",
+                content,
+              });
+            }}
+          >
+            {shares.map((s) => (
+              <ShareCard
+                key={s.timestamp}
+                share={s}
+                style={{ margin: "16px 32px" }}
+                onDownload={(share) => {
+                  fetchFile(share);
+                  setDownloadsDrawerVis(true);
+                }}
+              />
+            ))}
+          </div>
+        </Layout>
       </Layout>
 
       <SettingsDrawer
@@ -227,6 +293,12 @@ const Clipboard: React.FC<{}> = () => {
         peers={peers}
         visible={peersDrawerVis}
         onClose={() => setPeersDrawerVis(false)}
+      />
+
+      <DownloadsDrawer
+        downloads={downloads}
+        visible={downloadsDrawerVis}
+        onClose={() => setDownloadsDrawerVis(false)}
       />
     </div>
   );
