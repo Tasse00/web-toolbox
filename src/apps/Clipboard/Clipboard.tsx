@@ -219,6 +219,9 @@ const Clipboard: React.FC<{}> = () => {
                     type="text"
                     icon={<FileOutlined />}
                     onClick={() => {
+                      if (iptFileRef.current) {
+                        iptFileRef.current.value = "";
+                      }
                       iptFileRef.current?.click();
                     }}
                   >
