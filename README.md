@@ -1,14 +1,4 @@
-## TODO
-
-- [x] app operation: double-click set max size
-- [x] app bars: show/hide app
-- [x] app bars: launch app
-- [x] app bars: close app / close all apps
-- [x] app instance title control
-- [x] app border resize
-- [ ] manual set title
-- [ ] split border resize to a component
--
+# Web Toolbox
 
 ---
 
