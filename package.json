@@ -2,6 +2,7 @@
   "name": "web-toolbox",
   "version": "0.1.0",
   "private": true,
+  "homepage": "./",
   "dependencies": {
     "@ahooksjs/use-request": "^2.8.15",
     "@ant-design/icons": "^4.7.0",
@@ -61,5 +62,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "gh-pages": "^3.2.3"
   }
 }
