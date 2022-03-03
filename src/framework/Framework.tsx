@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../common/components/Layout";
 import Bar from "./Bar";
 import { DndProvider } from "react-dnd";
@@ -51,13 +51,25 @@ const Framework: React.FC<{
   );
   const ref = React.useRef<HTMLDivElement>(null);
 
-  // TODO unable to listen to resize event.
   const layoutDom = ref.current;
-  const size = React.useMemo<[number, number]>(
-    () =>
-      layoutDom ? [layoutDom.clientWidth, layoutDom.clientHeight] : [0, 0],
-    [layoutDom]
-  );
+  const [size, setSize] = useState<[number, number]>([400, 200]);
+
+  useEffect(() => {
+    if (layoutDom) {
+      setSize([layoutDom.clientWidth, layoutDom.clientHeight]);
+    }
+  }, [layoutDom]);
+
+  useEffect(() => {
+    const func = () => {
+      if (ref.current) {
+        setSize([ref.current.clientWidth, ref.current.clientHeight]);
+      }
+    };
+    window.addEventListener("resize", func);
+    return () => window.removeEventListener("resize", func);
+  }, []);
+
   return (
     <FrameworkContext.Provider
       value={{
