@@ -1,13 +1,16 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { AppConfig, FrameworkContextValue } from "./Framework";
 import { useHotkeys } from "react-hotkeys-hook";
-import AppLaunchIcon from "./AppLaunchIcon";
+import { Input } from "antd";
+import AppLaunchItem from "./AppLaunchItem";
 const LaunchPad: React.FC<{
   zIndex: number;
   configs: AppConfig<any>[];
   launchApp: FrameworkContextValue["launchApp"];
 }> = ({ zIndex, configs, launchApp }) => {
   const [visible, setVisible] = React.useState(false);
+  const [appKeywork, setAppKeywork] = React.useState("");
+  const [idx, setIdx] = React.useState(0);
 
   const pointerEvents: React.CSSProperties["pointerEvents"] = visible
     ? undefined
@@ -15,36 +18,89 @@ const LaunchPad: React.FC<{
 
   // useHotkeys("shift+l", () => setVisible((prev) => !prev), [setVisible]);
   useHotkeys("esc", () => setVisible((prev) => !prev), {}, []);
+
   const opacity: React.CSSProperties["opacity"] = visible ? 1 : 0;
 
+  const ref = useRef<Input>(null);
+  useEffect(() => {
+    if (visible && ref.current) {
+      ref.current.focus();
+    }
+  }, [visible]);
+
+  const filteredConfigs = configs.filter(
+    (conf) => conf.appId.includes(appKeywork) || conf.title.includes(appKeywork)
+  );
+  useEffect(() => {
+    if (filteredConfigs.length > 0 && idx >= filteredConfigs.length) {
+      setIdx(filteredConfigs.length - 1);
+    }
+  }, [filteredConfigs, idx]);
+  // TODO 键盘上、下、回车
+
+  const onLaunch = useCallback(
+    (config: AppConfig) => {
+      setVisible(false);
+      setTimeout(() => {
+        launchApp({
+          appId: config.appId,
+          props: { ...config.defaultProps },
+          insId: Math.random().toString(),
+        });
+        setAppKeywork("");
+        setIdx(0);
+      }, 100);
+    },
+    [launchApp]
+  );
   return (
     <div
       style={{ ...FullscreenStyle, zIndex, pointerEvents, opacity }}
       onClick={() => setVisible(false)}
     >
       <div style={ContainerStyle}>
-        {configs.map((conf) => (
-          <AppLaunchIcon
-            key={conf.appId}
-            config={conf}
-            size={96}
-            onLaunch={() => {
-              setVisible(false);
-              setTimeout(
-                () =>
-                  launchApp({
-                    appId: conf.appId,
-                    props: { ...conf.defaultProps },
-                    insId: Math.random().toString(),
-                  }),
-                100
-              );
-            }}
-            style={{
-              margin: 8,
-            }}
-          />
-        ))}
+        <Input
+          ref={ref}
+          placeholder="Search App"
+          value={appKeywork}
+          onChange={(e) => setAppKeywork(e.target.value)}
+          onKeyDown={(e) => {
+            switch (e.code) {
+              case "ArrowDown":
+                setIdx((v) => Math.min(v + 1, filteredConfigs.length - 1));
+                break;
+              case "ArrowUp":
+                setIdx((v) => Math.max(v - 1, 0));
+                break;
+              case "Escape":
+                setVisible((v) => !v);
+                break;
+            }
+          }}
+          onPressEnter={() => onLaunch(filteredConfigs[idx])}
+        />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            rowGap: 4,
+            overflow: "auto",
+          }}
+        >
+          {filteredConfigs.map((conf, cidx) => (
+            <AppLaunchItem
+              key={conf.appId}
+              config={conf}
+              style={{
+                border:
+                  cidx === idx
+                    ? "2px solid rgb(100,100,100, 0.5)"
+                    : "2px solid rgb(100,100,100,0)",
+              }}
+              onLaunch={() => onLaunch(conf)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -65,15 +121,16 @@ const FullscreenStyle: React.CSSProperties = {
 
 const ContainerStyle: React.CSSProperties = {
   position: "absolute",
-  width: "80%",
-  height: "80%",
+  maxWidth: "90%",
+  maxHeight: "90%",
   background: "rgba(255,255,255,1)",
   borderRadius: 16,
   boxShadow: "0 0 16px rgba(200,200,200,0.5)",
-  padding: 8,
+  padding: 16,
   display: "flex",
-  justifyContent: "center",
+  flexDirection: "column",
   alignItems: "center",
+  rowGap: 8,
 };
 
 export default LaunchPad;
