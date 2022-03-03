@@ -3,7 +3,7 @@ import { ClipbardAppConfig } from "./Clipboard";
 import Game2048App from "./Game2048";
 import { JsonViewAppConfig } from "./JsonView";
 import SettingsApp from "./Settings";
-import TestApp from "./TestApp";
+import { LifeGameConfig } from "./LifeGame";
 import { Web3UtilsApp } from "./Web3Utils";
 
 const configs: AppConfig<any>[] = [
@@ -14,12 +14,6 @@ const configs: AppConfig<any>[] = [
     defaultProps: {},
   },
   JsonViewAppConfig,
-  {
-    appId: "test",
-    title: "TEST",
-    component: TestApp,
-    defaultProps: {},
-  },
   {
     appId: "game2048",
     title: "2048",
@@ -33,6 +27,7 @@ const configs: AppConfig<any>[] = [
     defaultProps: {},
   },
   ClipbardAppConfig,
+  LifeGameConfig,
 ];
 
 export default configs;
