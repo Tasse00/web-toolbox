@@ -2,8 +2,7 @@ import { AppConfig } from "../framework/Framework";
 import Game2048App from "./Game2048";
 import { JsonViewApp } from "./JsonView";
 import SettingsApp from "./Settings";
-import LifeGame from "./LifeGame";
-import TestApp from "./TestApp";
+import { LifeGameConfig } from "./LifeGame";
 import { Web3UtilsApp } from "./Web3Utils";
 
 const configs: AppConfig<any>[] = [
@@ -20,12 +19,6 @@ const configs: AppConfig<any>[] = [
     defaultProps: {},
   },
   {
-    appId: "test",
-    title: "TEST",
-    component: TestApp,
-    defaultProps: {},
-  },
-  {
     appId: "game2048",
     title: "2048",
     component: Game2048App,
@@ -37,12 +30,7 @@ const configs: AppConfig<any>[] = [
     component: SettingsApp,
     defaultProps: {},
   },
-  {
-    appId: "lifegame",
-    title: 'LifeGame',
-    component: LifeGame,
-    defaultProps: {},
-  }
+  LifeGameConfig,
 ];
 
 export default configs;
