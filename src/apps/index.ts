@@ -1,7 +1,7 @@
 import { AppConfig } from "../framework/Framework";
 import { ClipbardAppConfig } from "./Clipboard";
 import Game2048App from "./Game2048";
-import { JsonViewApp } from "./JsonView";
+import { JsonViewAppConfig } from "./JsonView";
 import SettingsApp from "./Settings";
 import TestApp from "./TestApp";
 import { Web3UtilsApp } from "./Web3Utils";
@@ -13,12 +13,7 @@ const configs: AppConfig<any>[] = [
     component: Web3UtilsApp,
     defaultProps: {},
   },
-  {
-    appId: "json-viewer",
-    title: "JsonViewer",
-    component: JsonViewApp,
-    defaultProps: {},
-  },
+  JsonViewAppConfig,
   {
     appId: "test",
     title: "TEST",
