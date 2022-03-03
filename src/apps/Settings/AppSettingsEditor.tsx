@@ -68,7 +68,7 @@ const AppSettingsEditor: React.FC<Props> = ({ appId }) => {
           <Col>
             <ReactJson
               src={value || editingValue}
-              onEdit={(v) => {
+              onEdit={(v: any) => {
                 setEditingValue(v.updated_src);
               }}
             />
