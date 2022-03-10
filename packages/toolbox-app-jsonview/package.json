@@ -1,0 +1,27 @@
+{
+  "name": "toolbox-app-jsonview",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "copy": "copyfiles  -u 1 \"src/**/*.scss\" lib"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jsonpath": "^0.2.0",
+    "copyfiles": "^2.4.1",
+    "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.7.0",
+    "antd": "^4.18.0",
+    "jsonpath": "^1.1.1",
+    "react": "^17.0.2",
+    "toolbox-components": "workspace:../toolbox-components",
+    "toolbox-framework": "workspace:../toolbox-framework",
+    "toolbox-utils": "workspace:../toolbox-utils"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "name": "toolbox-dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": "./",
+  "dependencies": {
+    "@craco/craco": "^6.4.3",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.0.3",
+    "@types/node": "^16.11.16",
+    "@types/react": "^17.0.37",
+    "@types/react-dom": "^17.0.11",
+    "antd": "^4.18.0",
+    "assert": "^2.0.0",
+    "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
+    "https-browserify": "^1.0.0",
+    "os-browserify": "^0.3.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "5.0.0",
+    "sass": "^1.45.1",
+    "stream-browserify": "^3.0.0",
+    "stream-http": "^3.2.0",
+    "toolbox-app-clipboard": "workspace:../toolbox-app-clipboard",
+    "toolbox-app-game2048": "workspace:../toolbox-app-game2048",
+    "toolbox-app-jsonview": "workspace:../toolbox-app-jsonview",
+    "toolbox-app-lifegame": "workspace:../toolbox-app-lifegame",
+    "toolbox-app-settings": "workspace:../toolbox-app-settings",
+    "toolbox-app-web3utils": "workspace:../toolbox-app-web3utils",
+    "toolbox-components": "workspace:../toolbox-components",
+    "toolbox-framework": "workspace:../toolbox-framework",
+    "toolbox-utils": "workspace:../toolbox-utils",
+    "typescript": "^4.5.4",
+    "url": "^0.11.0",
+    "web-vitals": "^2.1.2"
+  },
+  "scripts": {
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "gh-pages": "^3.2.3"
+  }
+}
