@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
-    "copy": "copyfiles  -u 1 \"src/**/*.scss\" lib"
+    "copy": "copyfiles  -u 1 \"src/**/*.scss\" lib",
+    "dist": "pnpm run build && pnpm run copy"
   },
   "author": "",
   "license": "ISC",

@@ -1,5 +1,8 @@
 {
   "name": "toolbox",
   "version": "0.1.0",
-  "scripts": {}
+  "scripts": {
+    "dev:deps": "pnpm run -r --filter '!toolbox-dashboard' --parallel dev",
+    "dev:dashboard": "pnpm run -r --filter toolbox-dashboard start"
+  }
 }
