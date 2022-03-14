@@ -1,12 +1,11 @@
 import { FileOutlined, SettingOutlined } from "@ant-design/icons";
 import { Button, Card, Col, Row } from "antd";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Layout } from "toolbox-components";
+import { Layout, WebsocketStatus } from "toolbox-components";
 import SettingsDrawer from "./components/SettingsDrawer";
 import useWebSocket from "react-use-websocket";
 import { useAppConfig } from "toolbox-framework";
 import { SignalingSendMessage, usePeersManager } from "./hooks";
-import WebsocketStatus from "./components/sidebar/WebsocketStatus";
 import ShareCard from "./components/ShareCard";
 import PeersDrawer from "./components/PeersDrawer";
 import PeersStatus from "./components/sidebar/PeersStatus";

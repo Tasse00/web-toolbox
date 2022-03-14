@@ -6,6 +6,7 @@ import { SettingsAppConfig } from "toolbox-app-settings";
 import { LifeGameConfig } from "toolbox-app-lifegame";
 import { Web3UtilsAppConfig } from "toolbox-app-web3utils";
 import { ClipbardAppConfig } from "toolbox-app-clipboard";
+import { WebsocketAppConfig } from "toolbox-app-websocket";
 
 const configs: AppConfig<any>[] = [
   Web3UtilsAppConfig,
@@ -14,6 +15,7 @@ const configs: AppConfig<any>[] = [
   SettingsAppConfig,
   ClipbardAppConfig,
   LifeGameConfig,
+  WebsocketAppConfig,
 ];
 
 export default configs;

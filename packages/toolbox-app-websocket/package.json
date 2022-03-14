@@ -1,0 +1,23 @@
+{
+  "name": "toolbox-app-websocket",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "copy": "copyfiles  -u 1 \"src/**/*.scss\" lib",
+    "dist": "pnpm run build && pnpm run copy"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "antd": "^4.18.0",
+    "react": "^17.0.2",
+    "react-use-websocket": "^2.9.1",
+    "toolbox-components": "workspace:../toolbox-components",
+    "toolbox-framework": "workspace:../toolbox-framework",
+    "toolbox-utils": "workspace:../toolbox-utils",
+    "typescript": "^4.5.4"
+  }
+}

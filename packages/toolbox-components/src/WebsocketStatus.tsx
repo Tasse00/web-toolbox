@@ -9,7 +9,7 @@ import { Tooltip } from "antd";
 import React from "react";
 import { ReadyState } from "react-use-websocket";
 
-const WebsocketStatus: React.FC<{
+export const WebsocketStatus: React.FC<{
   status: ReadyState;
   style?: React.CSSProperties;
 }> = ({ status, style }) => {
@@ -43,5 +43,3 @@ const WebsocketStatus: React.FC<{
     </Tooltip>
   );
 };
-
-export default WebsocketStatus;
