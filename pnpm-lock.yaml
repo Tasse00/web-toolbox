@@ -95,6 +95,31 @@ importers:
       copyfiles: 2.4.1
       typescript: 4.5.4
 
+  packages/toolbox-app-mynovels:
+    specifiers:
+      '@ahooksjs/use-request': ^2.8.15
+      '@ant-design/icons': ^4.7.0
+      antd: ^4.18.0
+      copyfiles: ^2.4.1
+      react: ^17.0.2
+      react-router-dom: '6'
+      toolbox-components: workspace:../toolbox-components
+      toolbox-framework: workspace:../toolbox-framework
+      toolbox-utils: workspace:../toolbox-utils
+      typescript: ^4.5.4
+    dependencies:
+      '@ahooksjs/use-request': 2.8.15_react@17.0.2
+      '@ant-design/icons': 4.7.0_react@17.0.2
+      antd: 4.18.0_react@17.0.2
+      react: 17.0.2
+      react-router-dom: 6.2.2_react@17.0.2
+      toolbox-components: link:../toolbox-components
+      toolbox-framework: link:../toolbox-framework
+      toolbox-utils: link:../toolbox-utils
+    devDependencies:
+      copyfiles: 2.4.1
+      typescript: 4.5.4
+
   packages/toolbox-app-settings:
     specifiers:
       antd: ^4.18.0
@@ -203,6 +228,7 @@ importers:
       toolbox-app-game2048: workspace:../toolbox-app-game2048
       toolbox-app-jsonview: workspace:../toolbox-app-jsonview
       toolbox-app-lifegame: workspace:../toolbox-app-lifegame
+      toolbox-app-mynovels: workspace:../toolbox-app-mynovels
       toolbox-app-settings: workspace:../toolbox-app-settings
       toolbox-app-web3utils: workspace:../toolbox-app-web3utils
       toolbox-app-websocket: workspace:../toolbox-app-websocket
@@ -237,6 +263,7 @@ importers:
       toolbox-app-game2048: link:../toolbox-app-game2048
       toolbox-app-jsonview: link:../toolbox-app-jsonview
       toolbox-app-lifegame: link:../toolbox-app-lifegame
+      toolbox-app-mynovels: link:../toolbox-app-mynovels
       toolbox-app-settings: link:../toolbox-app-settings
       toolbox-app-web3utils: link:../toolbox-app-web3utils
       toolbox-app-websocket: link:../toolbox-app-websocket
@@ -297,6 +324,16 @@ packages:
     dependencies:
       lodash.debounce: 4.0.8
       lodash.throttle: 4.1.1
+    dev: false
+
+  /@ahooksjs/use-request/2.8.15_react@17.0.2:
+    resolution: {integrity: sha512-xhVaM4fyIiAMdVFuuU5i3CFUdFa/IblF+fvITVMFaUEO3w/V5tVCAF6WIA3T03n1/RPuzRkA7Ao1PFtSGtGelw==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0
+    dependencies:
+      lodash.debounce: 4.0.8
+      lodash.throttle: 4.1.1
+      react: 17.0.2
     dev: false
 
   /@ant-design/colors/6.0.0:
@@ -7545,6 +7582,12 @@ packages:
     resolution: {integrity: sha512-COpmrF2NOg4TBWUJ5UVyaCU2A88wEMkUPK4hNqyCkqHbxT92BbvfjoSozkAIIm6XhicGlJHhFdullInrdhwU8Q==}
     dev: false
 
+  /history/5.3.0:
+    resolution: {integrity: sha512-ZqaKwjjrAYUYfLG+htGaIIZ4nioX2L70ZUMIFysS3xvBsSG4x/n1V6TXV3N8ZYNuFGlDirFg32T7B6WOUPDYcQ==}
+    dependencies:
+      '@babel/runtime': 7.16.5
+    dev: false
+
   /hmac-drbg/1.0.1:
     resolution: {integrity: sha1-0nRXAQJabHdabFRXk+1QL8DGSaE=}
     dependencies:
@@ -12427,6 +12470,26 @@ packages:
       tslib: 1.14.1
       use-callback-ref: 1.2.5_react@17.0.2
       use-sidecar: 1.0.5_react@17.0.2
+    dev: false
+
+  /react-router-dom/6.2.2_react@17.0.2:
+    resolution: {integrity: sha512-AtYEsAST7bDD4dLSQHDnk/qxWLJdad5t1HFa1qJyUrCeGgEuCSw0VB/27ARbF9Fi/W5598ujvJOm3ujUCVzuYQ==}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      history: 5.3.0
+      react: 17.0.2
+      react-router: 6.2.2_react@17.0.2
+    dev: false
+
+  /react-router/6.2.2_react@17.0.2:
+    resolution: {integrity: sha512-/MbxyLzd7Q7amp4gDOGaYvXwhEojkJD5BtExkuKmj39VEE0m3l/zipf6h2WIB2jyAO0lI6NGETh4RDcktRm4AQ==}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      history: 5.3.0
+      react: 17.0.2
     dev: false
 
   /react-scripts/5.0.0_9c63168fb67934ec128b649408502633:

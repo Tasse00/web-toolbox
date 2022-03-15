@@ -30,6 +30,7 @@
     "toolbox-app-lifegame": "workspace:../toolbox-app-lifegame",
     "toolbox-app-settings": "workspace:../toolbox-app-settings",
     "toolbox-app-web3utils": "workspace:../toolbox-app-web3utils",
+    "toolbox-app-mynovels": "workspace:../toolbox-app-mynovels",
     "toolbox-app-websocket": "workspace:../toolbox-app-websocket",
     "toolbox-components": "workspace:../toolbox-components",
     "toolbox-framework": "workspace:../toolbox-framework",
