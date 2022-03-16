@@ -2,7 +2,7 @@ import useRequest from "@ahooksjs/use-request";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { Button, Skeleton } from "antd";
 import React, { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "toolbox-components";
 import { ChapterViewer } from "../components/ChapterViewer";
 import { MenuViewer } from "../components/MenuViewer";
@@ -13,6 +13,7 @@ import { useServices } from "../providers/ServiceProvider";
 const ReaderPage: React.FC<{}> = (props) => {
   const [searchParams] = useSearchParams();
   const id = parseInt(searchParams.get("id") || "");
+  const navigate = useNavigate();
   const pages = usePages();
   const { fetchSyncChapter, fetchSyncNovel } = useServices();
   const {
@@ -81,7 +82,7 @@ const ReaderPage: React.FC<{}> = (props) => {
           <Button
             icon={<ArrowLeftOutlined />}
             type="text"
-            onClick={pages.goBack}
+            onClick={() => navigate(-1)}
           />
         </div>
       }

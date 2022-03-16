@@ -9,7 +9,7 @@ import {
   Skeleton,
   Typography,
 } from "antd";
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "toolbox-components";
 import { useServices } from "../providers/ServiceProvider";
@@ -18,39 +18,53 @@ import { SyncStatusMap } from "../consts";
 import { usePages } from "../hooks";
 
 const UnionSearchPage: React.FC<{}> = (props) => {
-  const go = useNavigate();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const keyword = searchParams.get("keyword") || "";
+  // const autoSearch = (searchParams.get("autoSearch") || "true") === "true";
+
   const { searchUnion, startSyncNovel } = useServices();
   const pages = usePages();
-  const keyword = searchParams.get("keyword") || "";
-  const { data, loading, error } = useRequest(
-    async () => await searchUnion(keyword),
-    {
-      refreshDeps: [keyword, searchUnion],
-    }
-  );
+
+  const {
+    data,
+    loading,
+    error,
+    run: search,
+  } = useRequest(async (kv) => await searchUnion(kv), {
+    manual: true,
+    refreshDeps: [searchUnion],
+  });
 
   const { run, loading: starting } = useRequest(
     async (source: string, url: string) => {
       await startSyncNovel(source, url);
       await new Promise((res) => setTimeout(res, 5000));
-      await pages.goSearchSync({ keyword: "" });
+      await pages.TabLibrary.go(navigate);
     },
     { manual: true }
   );
+
+  useEffect(() => {
+    if (keyword.length > 0) {
+      search(keyword);
+    }
+  }, []);
 
   return (
     <Layout
       bar={
         <div style={{ display: "flex", alignItems: "center" }}>
-          <Button icon={<ArrowLeftOutlined />} onClick={() => go(-1)} />
           <Input.Search
             placeholder="search"
             defaultValue={keyword}
             onSearch={(v) => {
-              setSearchParams({
-                keyword: v,
-              });
+              if (v.length > 0) {
+                search(v);
+              }
+              // setSearchParams({
+              //   keyword: v,
+              // });
             }}
           />
         </div>
@@ -99,7 +113,13 @@ const UnionSearchPage: React.FC<{}> = (props) => {
               }}
               onClick={() => {
                 if (candidate.novel) {
-                  pages.goReader({ id: candidate.novel.id });
+                  pages.Novel.go(
+                    navigate,
+                    {},
+                    {
+                      novelId: candidate.novel.id.toString(),
+                    }
+                  );
                 }
               }}
             >

@@ -99,8 +99,13 @@ importers:
     specifiers:
       '@ahooksjs/use-request': ^2.8.15
       '@ant-design/icons': ^4.7.0
+      '@chakra-ui/icons': ^1.1.7
+      '@chakra-ui/react': ^1.8.6
+      '@emotion/react': ^11
+      '@emotion/styled': ^11
       antd: ^4.18.0
       copyfiles: ^2.4.1
+      framer-motion: ^6
       react: ^17.0.2
       react-router-dom: '6'
       toolbox-components: workspace:../toolbox-components
@@ -110,7 +115,12 @@ importers:
     dependencies:
       '@ahooksjs/use-request': 2.8.15_react@17.0.2
       '@ant-design/icons': 4.7.0_react@17.0.2
+      '@chakra-ui/icons': 1.1.7_react@17.0.2
+      '@chakra-ui/react': 1.8.6_60b51c33d48d6f4d5ad9a5956ff15779
+      '@emotion/react': 11.8.1_react@17.0.2
+      '@emotion/styled': 11.8.1_6c7af6c424779b06aaaec9f6df8ba484
       antd: 4.18.0_react@17.0.2
+      framer-motion: 6.2.8_react@17.0.2
       react: 17.0.2
       react-router-dom: 6.2.2_react@17.0.2
       toolbox-components: link:../toolbox-components
@@ -2012,6 +2022,27 @@ packages:
     dependencies:
       '@chakra-ui/system': 1.11.2_08a40c758e6456be63daae44ab99bf23
       '@chakra-ui/utils': 1.10.4
+      react: 17.0.2
+    dev: false
+
+  /@chakra-ui/icon/2.0.5_react@17.0.2:
+    resolution: {integrity: sha512-ZrqRvCCIxGr4qFd/r1pmtd9tobRmv8KAxV7ygFoc/t4vOSKTcVIjhE12gsI3FzgvXM15ZFVwsxa1zodwgo5neQ==}
+    peerDependencies:
+      '@chakra-ui/system': '>=1.0.0'
+      react: '>=16.8.6'
+    dependencies:
+      '@chakra-ui/utils': 1.10.4
+      react: 17.0.2
+    dev: false
+
+  /@chakra-ui/icons/1.1.7_react@17.0.2:
+    resolution: {integrity: sha512-YIHxey/B4M2PyFASlHXtAWFyW+tsAtGAChOJ8dsM2kpu1MbVUqm/6nMI1KIFd7Te5IWuNYA75rAHBdLI0Yu61A==}
+    peerDependencies:
+      '@chakra-ui/system': '>=1.0.0'
+      react: '>=16.8.6'
+    dependencies:
+      '@chakra-ui/icon': 2.0.5_react@17.0.2
+      '@types/react': 17.0.38
       react: 17.0.2
     dev: false
 

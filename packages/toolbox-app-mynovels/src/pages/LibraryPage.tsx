@@ -12,9 +12,10 @@ import { SyncStatusMap } from "../consts";
 import { usePages } from "../hooks";
 import { useServices } from "../providers/ServiceProvider";
 
-const SyncSearchPage: React.FC<{}> = (props) => {
+const LibraryPage: React.FC<{}> = (props) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const { searchSync, setServerUrl } = useServices();
+  const { searchSync } = useServices();
+  const navigate = useNavigate();
   const pages = usePages();
   const keyword = searchParams.get("keyword") || "";
   const { data, loading, error } = useRequest(
@@ -28,7 +29,6 @@ const SyncSearchPage: React.FC<{}> = (props) => {
     <Layout
       bar={
         <div style={{ display: "flex", alignItems: "center" }}>
-          <Button icon={<ArrowLeftOutlined />} onClick={() => pages.goBack()} />
           <Input.Search
             placeholder="search"
             defaultValue={keyword}
@@ -78,7 +78,14 @@ const SyncSearchPage: React.FC<{}> = (props) => {
                 backgroundColor: "rgba(220,220,220,0.2)",
                 borderRadius: 12,
               }}
-              onClick={() => pages.goReader({ id: novel.id })}
+              onClick={() =>
+                // pages.Reader.go(navigate, { id: novel.id.toString() })
+                pages.NovelMenu.go(
+                  navigate,
+                  {},
+                  { novelId: novel.id.toString() }
+                )
+              }
             >
               <Image
                 width={180}
@@ -117,15 +124,8 @@ const SyncSearchPage: React.FC<{}> = (props) => {
 
       {loading && <Skeleton />}
       {!loading && error && <Alert type="error" message={error.message} />}
-      {!loading && (
-        <div style={{ margin: 8, paddingLeft: 24, paddingRight: 24 }}>
-          <Button block onClick={() => pages.goSearchUnion({ keyword })}>
-            Union Search
-          </Button>
-        </div>
-      )}
     </Layout>
   );
 };
 
-export default SyncSearchPage;
+export default LibraryPage;
