@@ -19,5 +19,8 @@
     "toolbox-framework": "workspace:../toolbox-framework",
     "toolbox-utils": "workspace:../toolbox-utils",
     "typescript": "^4.5.4"
+  },
+  "devDependencies": {
+    "copyfiles": "^2.4.1"
   }
 }

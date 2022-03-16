@@ -12,7 +12,6 @@ const BookShelfPage: React.FC<{}> = (props) => {
         <Input.Search
           placeholder="search"
           onSearch={(v) => {
-            console.log("v=", v);
             go({
               pathname: "/search/sync-novels",
               search: createSearchParams({

@@ -1,15 +1,27 @@
 import useRequest from "@ahooksjs/use-request";
-import { Alert, Image, Input, Skeleton, Typography } from "antd";
+import {
+  Alert,
+  Button,
+  Divider,
+  Image,
+  Input,
+  Modal,
+  Skeleton,
+  Typography,
+} from "antd";
 import React from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "toolbox-components";
 import { useServices } from "../providers/ServiceProvider";
+import { ArrowLeftOutlined } from "@ant-design/icons";
+import { SyncStatusMap } from "../consts";
+import { usePages } from "../hooks";
 
 const UnionSearchPage: React.FC<{}> = (props) => {
   const go = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { searchUnion, setServerUrl } = useServices();
-  console.log(setServerUrl);
+  const { searchUnion, startSyncNovel } = useServices();
+  const pages = usePages();
   const keyword = searchParams.get("keyword") || "";
   const { data, loading, error } = useRequest(
     async () => await searchUnion(keyword),
@@ -18,18 +30,30 @@ const UnionSearchPage: React.FC<{}> = (props) => {
     }
   );
 
+  const { run, loading: starting } = useRequest(
+    async (source: string, url: string) => {
+      await startSyncNovel(source, url);
+      await new Promise((res) => setTimeout(res, 5000));
+      await pages.goSearchSync({ keyword: "" });
+    },
+    { manual: true }
+  );
+
   return (
     <Layout
       bar={
-        <Input.Search
-          placeholder="search"
-          defaultValue={keyword}
-          onSearch={(v) => {
-            setSearchParams({
-              keyword: v,
-            });
-          }}
-        />
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <Button icon={<ArrowLeftOutlined />} onClick={() => go(-1)} />
+          <Input.Search
+            placeholder="search"
+            defaultValue={keyword}
+            onSearch={(v) => {
+              setSearchParams({
+                keyword: v,
+              });
+            }}
+          />
+        </div>
       }
     >
       {!loading && !error && data === undefined && (
@@ -65,7 +89,7 @@ const UnionSearchPage: React.FC<{}> = (props) => {
             flexWrap: "wrap",
           }}
         >
-          {(data || []).map((novel) => (
+          {(data || []).map((candidate) => (
             <div
               style={{
                 padding: 8,
@@ -73,12 +97,17 @@ const UnionSearchPage: React.FC<{}> = (props) => {
                 backgroundColor: "rgba(220,220,220,0.2)",
                 borderRadius: 12,
               }}
+              onClick={() => {
+                if (candidate.novel) {
+                  pages.goReader({ id: candidate.novel.id });
+                }
+              }}
             >
               <Image
                 width={180}
                 height={240}
                 placeholder="No Image"
-                src={novel.img_url}
+                src={candidate.img_url}
                 preview={false}
               />
               <div
@@ -93,11 +122,37 @@ const UnionSearchPage: React.FC<{}> = (props) => {
                     wordBreak: "break-all",
                   }}
                 >
-                  {novel.title}
+                  {candidate.title}
                 </Typography.Text>
                 <Typography.Text type="secondary">
-                  {novel.author}
+                  {candidate.author}
                 </Typography.Text>
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  width: 180,
+                }}
+              >
+                <Typography.Text type="secondary">
+                  {candidate.source}
+                </Typography.Text>
+                {candidate.novel ? (
+                  <Typography.Text type="secondary">
+                    {SyncStatusMap[candidate.novel.sync.status]}
+                  </Typography.Text>
+                ) : (
+                  <Button
+                    size="small"
+                    type="primary"
+                    onClick={() => run(candidate.source, candidate.url)}
+                  >
+                    Sync
+                  </Button>
+                )}
               </div>
             </div>
           ))}
@@ -106,23 +161,15 @@ const UnionSearchPage: React.FC<{}> = (props) => {
 
       {loading && <Skeleton />}
       {!loading && error && <Alert type="error" message={error.message} />}
-      {/* {!loading && (
-        <div style={{ margin: 8, paddingLeft: 24, paddingRight: 24 }}>
-          <Button
-            block
-            onClick={() => {
-              go({
-                pathname: "/search/union-novels",
-                search: createSearchParams({
-                  keyword,
-                }).toString(),
-              });
-            }}
-          >
-            Union Search
-          </Button>
-        </div>
-      )} */}
+
+      <Modal
+        visible={starting}
+        maskClosable={false}
+        footer={false}
+        closable={false}
+      >
+        Starting to sync novel...
+      </Modal>
     </Layout>
   );
 };

@@ -171,6 +171,7 @@ importers:
   packages/toolbox-app-websocket:
     specifiers:
       antd: ^4.18.0
+      copyfiles: ^2.4.1
       react: ^17.0.2
       react-use-websocket: ^2.9.1
       toolbox-components: workspace:../toolbox-components
@@ -185,6 +186,8 @@ importers:
       toolbox-framework: link:../toolbox-framework
       toolbox-utils: link:../toolbox-utils
       typescript: 4.5.4
+    devDependencies:
+      copyfiles: 2.4.1
 
   packages/toolbox-components:
     specifiers:

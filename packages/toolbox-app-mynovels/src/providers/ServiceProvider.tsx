@@ -8,6 +8,8 @@ export interface NovelCandidate {
   title: string;
   author: string;
   img_url: string;
+
+  novel: SyncNovel | null;
 }
 
 export enum SyncStatus {
@@ -37,7 +39,7 @@ export interface SyncNovel {
 
   chapters_meta: {
     id: number | null;
-    sync: boolean;
+    synced: boolean;
     title: string;
     href: string;
   }[];
@@ -82,7 +84,6 @@ export const ServiceProvider: React.FC<{}> = (props) => {
   );
 
   function u(url: string, args: Record<string, string> = {}): string {
-    console.log(args);
     let _url = serverUrl;
     if (_url.endsWith("/")) {
       _url = _url.slice(0, serverUrl.length - 1);
@@ -164,11 +165,12 @@ export const ServiceProvider: React.FC<{}> = (props) => {
 
   const startSyncNovel = useCallback(
     async (source: string, url: string) => {
-      const resp = await fetch(u(`/sync-novel`), {
+      const resp = await fetch(u(`/sources/sync-novel`), {
         method: "POST",
+        headers: { "content-type": "application/json" },
         body: JSON.stringify({ source, url }),
       });
-      if (resp.status !== 201) {
+      if (resp.status !== 200) {
         throw {
           status: resp.status,
           data: await resp.json(),

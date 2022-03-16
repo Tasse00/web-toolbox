@@ -2,7 +2,8 @@
   "name": "toolbox",
   "version": "0.1.0",
   "scripts": {
-    "dist": "pnpm run -r dist",
+    "dist:libs": "pnpm run -r --filter 'toolbox-utils' --filter 'toolbox-components'  --filter 'toolbox-framework' dist",
+    "dist:apps": "pnpm run -r --filter 'toolbox-app-*' dist",
     "dev:libs": "pnpm run -r --parallel --filter 'toolbox-utils' --filter 'toolbox-components'  --filter 'toolbox-framework' dev",
     "dev:dashboard": "pnpm run -r --filter toolbox-dashboard start"
   }
