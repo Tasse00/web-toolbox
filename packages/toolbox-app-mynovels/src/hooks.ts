@@ -31,16 +31,17 @@ function buildHelper<
 >(url: string): NavHelper<T, U> {
   const parts = url.split("/");
 
-  const buildUrl = (p?: T, params?: U) => {
+  const buildUrl = (query?: T, params?: U) => {
     let u = url;
     if (params) {
       for (const [key, val] of Object.entries(params)) {
         u = u.replace(`:${key}`, val);
       }
     }
-    if (params) {
-      u = u + createSearchParams(p).toString();
+    if (query) {
+      u = u + "?" + createSearchParams(query).toString();
     }
+    console.log(u);
     return u;
   };
   return {
@@ -58,9 +59,8 @@ export function usePages() {
       TabLibrary: buildHelper<{ search?: string }>("/tabs/library"),
       TabUnionSearch: buildHelper<{ search?: string }>("/tabs/unionsearch"),
       TabSettings: buildHelper("/tabs/settings"),
-      Novel: buildHelper<{}, { novelId: string }>("/novel/:novelId"),
-      NovelMenu: buildHelper<{}, { novelId: string }>("/novel/:novelId/menu"),
-      Chapter: buildHelper<{}, { novelId: string }>("/novel/:novelId/chapter"),
+      Novel: buildHelper<{ id: string }>("/novel"),
+      Chapter: buildHelper<{ id: string }>("/chapter"),
     }),
     []
   );

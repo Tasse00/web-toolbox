@@ -1,64 +1,65 @@
 import React, { useCallback, useContext, useMemo } from "react";
 import { useAppConfig } from "toolbox-framework";
 
-export interface NovelCandidate {
-  source: string;
-  url: string;
-
+export interface ChapterMeta {
+  id: number;
   title: string;
-  author: string;
-  img_url: string;
-
-  novel: SyncNovel | null;
+  url: string;
+  synced: boolean;
+}
+export interface ChapterInfo extends ChapterMeta {
+  lines: string[];
+  sync_at: string;
 }
 
-export enum SyncStatus {
+export interface ChapterDetails extends ChapterInfo {
+  next_id: number | null;
+  prev_id: number | null;
+}
+
+export interface NovelMeta {
+  id: number;
+  source: string;
+  url: string;
+  title: string;
+  author: string;
+}
+
+export interface NovelInfo extends NovelMeta {
+  img: string;
+  desc: string;
+  sync_status: SyncStatusEnum;
+  sync_total_chapters: number;
+  sync_finished_chapters: number;
+  sync_manual_stopped: boolean;
+}
+
+export interface NovelDetails extends NovelInfo {
+  chapters: ChapterMeta[];
+}
+
+export interface ExternalSiteNovel {
+  source: string;
+  title: string;
+  author: string;
+  url: string;
+
+  local: NovelInfo | null;
+}
+
+export enum SyncStatusEnum {
   Created = 1,
   Syncing = 2,
   Finished = 3,
   Failed = 4,
 }
-export interface SyncNovelRecord {
-  id: number;
-  source: string;
-  url: string;
-  status: SyncStatus;
-  progress: number;
-  message: string;
-}
-export interface SyncNovel {
-  id: number;
-  source: string;
-  url: string;
-
-  title: string;
-  author: string;
-  img_url: string;
-
-  sync: SyncNovelRecord;
-
-  chapters_meta: {
-    id: number | null;
-    synced: boolean;
-    title: string;
-    href: string;
-  }[];
-}
-
-export interface SyncChapter {
-  id: number;
-  title: string;
-  href: string;
-  raw: string;
-  lines: string[];
-}
 
 export interface ServiceProviderValue {
-  searchUnion: (keyword: string) => Promise<NovelCandidate[]>;
-  searchSync: (keyword: string) => Promise<SyncNovel[]>;
-  startSyncNovel: (source: string, url: string) => Promise<SyncNovelRecord>;
-  fetchSyncNovel: (id: number) => Promise<SyncNovel>;
-  fetchSyncChapter: (id: number) => Promise<SyncChapter>;
+  searchUnion: (keyword: string) => Promise<ExternalSiteNovel[]>;
+  searchSync: (keyword: string) => Promise<NovelInfo[]>;
+  startSyncNovel: (source: string, url: string) => Promise<NovelDetails>;
+  fetchSyncNovel: (id: number) => Promise<NovelDetails>;
+  fetchSyncChapter: (id: number) => Promise<ChapterDetails>;
 
   setServerUrl: (url: string) => Promise<void>;
 }
@@ -101,7 +102,7 @@ export const ServiceProvider: React.FC<{}> = (props) => {
 
   const searchUnion = useCallback(
     async (keyword: string) => {
-      const resp = await fetch(u("/search", { keyword }));
+      const resp = await fetch(u("/search/external_sites", { keyword }));
       if (resp.status !== 200) {
         throw {
           status: resp.status,
@@ -109,7 +110,7 @@ export const ServiceProvider: React.FC<{}> = (props) => {
         };
       } else {
         const result = await resp.json();
-        return result as NovelCandidate[];
+        return result as ExternalSiteNovel[];
       }
     },
     [serverUrl]
@@ -117,7 +118,7 @@ export const ServiceProvider: React.FC<{}> = (props) => {
 
   const searchSync = useCallback(
     async (keyword: string) => {
-      const resp = await fetch(u("/sync-novels/search", { keyword }));
+      const resp = await fetch(u("/search/library", { keyword }));
       if (resp.status !== 200) {
         throw {
           status: resp.status,
@@ -125,7 +126,7 @@ export const ServiceProvider: React.FC<{}> = (props) => {
         };
       } else {
         const result = await resp.json();
-        return result as SyncNovel[];
+        return result as NovelInfo[];
       }
     },
     [serverUrl]
@@ -133,7 +134,7 @@ export const ServiceProvider: React.FC<{}> = (props) => {
 
   const fetchSyncNovel = useCallback(
     async (id: number) => {
-      const resp = await fetch(u(`/sync-novels/${id}`));
+      const resp = await fetch(u(`/novels/${id}`));
       if (resp.status !== 200) {
         throw {
           status: resp.status,
@@ -141,7 +142,7 @@ export const ServiceProvider: React.FC<{}> = (props) => {
         };
       } else {
         const result = await resp.json();
-        return result as SyncNovel;
+        return result as NovelDetails;
       }
     },
     [serverUrl]
@@ -149,7 +150,7 @@ export const ServiceProvider: React.FC<{}> = (props) => {
 
   const fetchSyncChapter = useCallback(
     async (id: number) => {
-      const resp = await fetch(u(`/sync-chapters/${id}`));
+      const resp = await fetch(u(`/chapters/${id}`));
       if (resp.status !== 200) {
         throw {
           status: resp.status,
@@ -157,7 +158,7 @@ export const ServiceProvider: React.FC<{}> = (props) => {
         };
       } else {
         const result = await resp.json();
-        return result as SyncChapter;
+        return result as ChapterDetails;
       }
     },
     [serverUrl]
@@ -165,7 +166,7 @@ export const ServiceProvider: React.FC<{}> = (props) => {
 
   const startSyncNovel = useCallback(
     async (source: string, url: string) => {
-      const resp = await fetch(u(`/sources/sync-novel`), {
+      const resp = await fetch(u(`/sync/novel`), {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ source, url }),
@@ -177,7 +178,7 @@ export const ServiceProvider: React.FC<{}> = (props) => {
         };
       } else {
         const result = await resp.json();
-        return result as SyncNovelRecord;
+        return result as NovelDetails;
       }
     },
     [serverUrl]

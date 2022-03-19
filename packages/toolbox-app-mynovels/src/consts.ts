@@ -1,8 +1,8 @@
-import { SyncStatus } from "./providers/ServiceProvider";
+import { SyncStatusEnum } from "./providers/ServiceProvider";
 
 export const SyncStatusMap = {
-  [SyncStatus.Created]: "Syncing",
-  [SyncStatus.Syncing]: "Syncing",
-  [SyncStatus.Failed]: "Failed",
-  [SyncStatus.Finished]: "Finished",
+  [SyncStatusEnum.Created]: "Syncing",
+  [SyncStatusEnum.Syncing]: "Syncing",
+  [SyncStatusEnum.Failed]: "Failed",
+  [SyncStatusEnum.Finished]: "Finished",
 };

@@ -1,18 +1,18 @@
 import useRequest from "@ahooksjs/use-request";
 import React, { useContext, useEffect, useMemo, useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
-import { SyncChapter, SyncNovel, useServices } from "./ServiceProvider";
+import { Outlet } from "react-router-dom";
+import { ChapterInfo, NovelDetails, useServices } from "./ServiceProvider";
 
 const Context = React.createContext<{
   info: {
     loading: boolean;
-    data?: SyncNovel;
+    data?: NovelDetails;
     error?: Error;
   };
 
   chapter: {
     loading: boolean;
-    data?: SyncChapter;
+    data?: ChapterInfo;
     error?: Error;
   };
 
@@ -65,7 +65,7 @@ export const NovelProvider: React.FC<{ id: number }> = ({ id }) => {
 
   const { hasPrev, hasNext, onPrev, onNext } = useMemo(() => {
     if (infoData) {
-      const syncedChapterIds = infoData.chapters_meta
+      const syncedChapterIds = infoData.chapters
         .map((ch) => (ch.id === null ? -1 : ch.id))
         .filter((id) => id !== -1);
       const idx = syncedChapterIds.indexOf(chapterId);

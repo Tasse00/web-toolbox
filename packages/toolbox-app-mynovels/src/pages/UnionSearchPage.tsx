@@ -112,14 +112,10 @@ const UnionSearchPage: React.FC<{}> = (props) => {
                 borderRadius: 12,
               }}
               onClick={() => {
-                if (candidate.novel) {
-                  pages.Novel.go(
-                    navigate,
-                    {},
-                    {
-                      novelId: candidate.novel.id.toString(),
-                    }
-                  );
+                if (candidate.local) {
+                  pages.Novel.go(navigate, {
+                    id: candidate.local.id.toString(),
+                  });
                 }
               }}
             >
@@ -127,7 +123,7 @@ const UnionSearchPage: React.FC<{}> = (props) => {
                 width={180}
                 height={240}
                 placeholder="No Image"
-                src={candidate.img_url}
+                src={""}
                 preview={false}
               />
               <div
@@ -160,9 +156,9 @@ const UnionSearchPage: React.FC<{}> = (props) => {
                 <Typography.Text type="secondary">
                   {candidate.source}
                 </Typography.Text>
-                {candidate.novel ? (
+                {candidate.local ? (
                   <Typography.Text type="secondary">
-                    {SyncStatusMap[candidate.novel.sync.status]}
+                    {SyncStatusMap[candidate.local.sync_status]}
                   </Typography.Text>
                 ) : (
                   <Button

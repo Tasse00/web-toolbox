@@ -2,18 +2,16 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 import { Button, Image, List, Typography } from "antd";
 import React from "react";
 import { Layout } from "toolbox-components";
-import { SyncNovel } from "../providers/ServiceProvider";
+import { NovelDetails } from "../providers/ServiceProvider";
 import { SyncStatus } from "./SyncStatus";
 
 interface Props {
-  info: SyncNovel;
+  info: NovelDetails;
   onChapter: (id: number) => any;
 }
 
-export const MenuViewer: React.FC<Props> = ({
-  info: { img_url, title, author, sync, chapters_meta, source },
-  onChapter,
-}) => {
+export const MenuViewer: React.FC<Props> = ({ info, onChapter }) => {
+  const { img, title, author, chapters, source } = info;
   return (
     <Layout style={{ height: "100%" }}>
       <div
@@ -26,7 +24,7 @@ export const MenuViewer: React.FC<Props> = ({
           alignItems: "center",
         }}
       >
-        <Image width={90} height={120} src={img_url} />
+        <Image width={90} height={120} src={img} />
         <div
           style={{
             flex: 1,
@@ -66,7 +64,7 @@ export const MenuViewer: React.FC<Props> = ({
               flexWrap: "wrap",
             }}
           >
-            <SyncStatus sync={sync} />
+            <SyncStatus novel={info} />
             <Button size="small">View Source</Button>
           </div>
         </div>
@@ -74,10 +72,10 @@ export const MenuViewer: React.FC<Props> = ({
       <div>
         <List
           size="small"
-          dataSource={chapters_meta}
+          dataSource={chapters}
           renderItem={(meta) => (
             <List.Item
-              key={meta.href}
+              key={meta.url}
               onClick={() => {
                 if (meta.id && meta.synced) {
                   onChapter(meta.id);

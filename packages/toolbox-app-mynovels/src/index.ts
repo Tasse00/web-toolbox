@@ -12,5 +12,5 @@ export const MyNovelsAppConfig: AppConfig = {
   title: "MyNovels",
   component: App,
   defaultProps: {},
-  suggestSize: [450, 768],
+  suggestSize: [375, 662],
 };

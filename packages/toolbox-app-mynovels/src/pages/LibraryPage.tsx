@@ -78,21 +78,12 @@ const LibraryPage: React.FC<{}> = (props) => {
                 backgroundColor: "rgba(220,220,220,0.2)",
                 borderRadius: 12,
               }}
-              onClick={() =>
-                // pages.Reader.go(navigate, { id: novel.id.toString() })
-                pages.NovelMenu.go(
-                  navigate,
-                  {},
-                  { novelId: novel.id.toString() }
-                )
-              }
+              onClick={() => {
+                console.log(novel.id.toString());
+                pages.Novel.go(navigate, { id: novel.id.toString() });
+              }}
             >
-              <Image
-                width={180}
-                height={240}
-                src={novel.img_url}
-                preview={false}
-              />
+              <Image width={180} height={240} src={novel.img} preview={false} />
               <div style={{ display: "flex", alignItems: "center" }}>
                 <Typography.Text style={{ flex: 1 }}>
                   {novel.title}
@@ -114,7 +105,7 @@ const LibraryPage: React.FC<{}> = (props) => {
                   {novel.source}
                 </Typography.Text>
                 <Typography.Text type="secondary">
-                  {SyncStatusMap[novel.sync.status]}
+                  {SyncStatusMap[novel.sync_status]}
                 </Typography.Text>
               </div>
             </div>

@@ -1,32 +1,17 @@
 import React from "react";
-import {
-  MemoryRouter,
-  Navigate,
-  Outlet,
-  Route,
-  Routes,
-} from "react-router-dom";
+import { MemoryRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Layout } from "toolbox-components";
-import { Pages, usePages } from "./hooks";
+import { usePages } from "./hooks";
 import BookShelfPage from "./pages/BookShelfPage";
-import ReaderPage from "./pages/ReaderPage";
 import LibraryPage from "./pages/LibraryPage";
 import UnionSearchPage from "./pages/UnionSearchPage";
 import { ServiceProvider } from "./providers/ServiceProvider";
 import { ChakraProvider } from "@chakra-ui/react";
 import RouterTabs from "./components/RouterTabs";
 import SettingsPage from "./pages/SettingsPage";
-import NovelProviderLayout from "./layouts/NovelProviderLayout";
-import NovelMenuPage from "./pages/NovelMenuPage";
+import NovelPage from "./pages/NovelPage";
 import ChapterPage from "./pages/ChapterPage";
 interface AppProps {}
-
-const BookShelf: React.FC = (props) => (
-  // <Layout bar={<div>Tab</div>}>
-
-  // </Layout>
-  <div>BookShelf</div>
-);
 
 const App: React.FC<AppProps> = () => {
   const pages = usePages();
@@ -53,6 +38,10 @@ const App: React.FC<AppProps> = () => {
                         path: pages.TabUnionSearch.path,
                         text: "Union",
                       },
+                      {
+                        path: pages.TabSettings.path,
+                        text: "Settings",
+                      },
                     ]}
                   />
                 }
@@ -75,13 +64,8 @@ const App: React.FC<AppProps> = () => {
                 />
               </Route>
 
-              <Route path={pages.Novel.path} element={<NovelProviderLayout />}>
-                <Route
-                  path={pages.NovelMenu.path}
-                  element={<NovelMenuPage />}
-                />
-                <Route path={pages.Chapter.path} element={<ChapterPage />} />
-              </Route>
+              <Route path={pages.Novel.path} element={<NovelPage />} />
+              <Route path={pages.Chapter.path} element={<ChapterPage />} />
 
               <Route
                 path="*"
