@@ -313,7 +313,10 @@ const AppBoxWithAppContext: React.FC<
     runtime: AppRuntime<any>;
     dragOffset: XYCoord;
     focused: boolean;
-  } & Omit<FrameworkContextValue, "apps" | "configs" | "launchApp">
+  } & Omit<
+    FrameworkContextValue,
+    "apps" | "configs" | "launchApp" | "setFrameworkSize"
+  >
 > = ({
   runtime,
   dragOffset,

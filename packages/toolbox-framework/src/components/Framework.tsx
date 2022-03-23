@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Layout } from "toolbox-components";
-import Bar from "./Bar";
+
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import AppContainer from "./AppContainer";
-import LaunchPad from "./LaunchPad";
-import ConfigProvider from "./ConfigProvider";
 
-const PanelStyle: React.CSSProperties = {
-  border: "1px solid rgba(100, 100, 100, 0.5)",
-  background: "rgba(200, 200, 200, 0.2)",
-};
+import ConfigProvider from "./ConfigProvider";
+import { Mobile } from "./Mobile/Layout";
+import PC from "./PC";
 
 export const Framework: React.FC<{
   defaultConfigs: AppConfig[];
-}> = ({ children, defaultConfigs }) => {
-  const [{ apps, configs, nextOrder }, dispatch] = React.useReducer(reducer, {
+}> = ({ defaultConfigs }) => {
+  const [{ apps, configs }, dispatch] = React.useReducer(reducer, {
     configs: defaultConfigs,
     apps: [],
     nextOrder: 1,
@@ -49,26 +44,8 @@ export const Framework: React.FC<{
     (payload) => dispatch({ type: "UPDATE_APP_INS_TITLE", payload }),
     [dispatch]
   );
-  const ref = React.useRef<HTMLDivElement>(null);
 
-  const layoutDom = ref.current;
   const [size, setSize] = useState<[number, number]>([400, 200]);
-
-  useEffect(() => {
-    if (layoutDom) {
-      setSize([layoutDom.clientWidth, layoutDom.clientHeight]);
-    }
-  }, [layoutDom]);
-
-  useEffect(() => {
-    const func = () => {
-      if (ref.current) {
-        setSize([ref.current.clientWidth, ref.current.clientHeight]);
-      }
-    };
-    window.addEventListener("resize", func);
-    return () => window.removeEventListener("resize", func);
-  }, []);
 
   return (
     <FrameworkContext.Provider
@@ -80,39 +57,18 @@ export const Framework: React.FC<{
         focusApp,
         setAppOpen,
         setAppInsTitle,
+        setFrameworkSize: setSize,
         configs,
         apps,
         size,
       }}
     >
-      <DndProvider backend={HTML5Backend}>
-        <ConfigProvider>
-          <Layout
-            bar={<Bar />}
-            barPosition="bottom"
-            barStyle={PanelStyle}
-            style={{ height: "100vh", width: "100vw" }}
-          >
-            <div
-              ref={ref}
-              style={{
-                width: "100%",
-                height: "100%",
-                position: "relative",
-                overflow: "hidden",
-              }}
-            >
-              <AppContainer />
-              <LaunchPad
-                zIndex={nextOrder}
-                configs={configs}
-                launchApp={launchApp}
-              />
-              {children}
-            </div>
-          </Layout>
-        </ConfigProvider>
-      </DndProvider>
+      <ConfigProvider>
+        <DndProvider backend={HTML5Backend}>
+          {/* <PC /> */}
+          <Mobile />
+        </DndProvider>
+      </ConfigProvider>
     </FrameworkContext.Provider>
   );
 };
@@ -125,6 +81,7 @@ export interface FrameworkContextValue {
   resizeApp: (args: ActResizeApp["payload"]) => void;
   focusApp: (args: ActFocusOpen["payload"]) => void;
   setAppInsTitle: (args: ActUpdateAppInsTitle["payload"]) => void;
+  setFrameworkSize: (args: [number, number]) => void;
 
   configs: State["configs"];
   apps: State["apps"];
@@ -140,6 +97,7 @@ export const FrameworkContext = React.createContext<FrameworkContextValue>({
   focusApp: () => {},
   setAppInsTitle: () => {},
 
+  setFrameworkSize: () => {},
   configs: [],
   apps: [],
   size: [0, 0],
