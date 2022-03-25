@@ -1,5 +1,12 @@
-import { Box, ChakraProvider } from "@chakra-ui/react";
-import React, { useCallback, useContext } from "react";
+import {
+  Box,
+  Button,
+  ChakraProvider,
+  Divider,
+  Flex,
+  Text,
+} from "@chakra-ui/react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useCachedArrayRender } from "../../common/hooks/render";
 import AppLaunchItem from "../AppLaunchItem";
 import { AppConfig, FrameworkContext } from "../Framework";
@@ -23,8 +30,6 @@ export const Mobile: React.FC<Props> = (props) => {
   } = useContext(FrameworkContext);
 
   const openedApp = apps.find((app) => app.open);
-
-  const zIndexTop = Math.max(0, ...apps.map((app) => app.order));
 
   const onLaunch = useCallback(
     (config: AppConfig) => {
@@ -56,26 +61,74 @@ export const Mobile: React.FC<Props> = (props) => {
     }))
   );
 
+  const [fullHeight, setFullHeight] = useState(window.innerHeight);
+  // 问题：移动端 100vh 会包行工具栏
+  // 解决：通过innerHeight设置，并监听scroll事件来更新高度
+  useEffect(() => {
+    const setHeight = () => setFullHeight(window.innerHeight);
+    document.addEventListener("scroll", setHeight);
+    return () => document.removeEventListener("scroll", setHeight);
+  }, []);
+
   return (
     <ChakraProvider>
-      <Box w="100vw" h="100vh">
-        {elems}
-        {/* {openedApp ? (
-          elems
-        ) : (
-          <Box zIndex={zIndexTop}>
-            {configs.map((conf) => (
-              <AppLaunchItem
-                key={conf.appId}
-                config={conf}
-                style={{
-                  border: "2px solid rgb(100,100,100, 0.5)",
-                }}
-                onLaunch={() => onLaunch(conf)}
-              />
-            ))}
+      <Box w="full" h={fullHeight}>
+        {!openedApp && (
+          <Box w="full" h="full" overflow="auto">
+            {apps.length > 0 && (
+              <>
+                <Text>Running</Text>
+                <Divider />
+                <Flex direction="column" align="stretch">
+                  {apps.map((app) => (
+                    <Flex
+                      key={app.insId}
+                      justify="space-between"
+                      align="center"
+                      borderRadius="lg"
+                      borderColor="gray.200"
+                      borderWidth={1}
+                      p={2}
+                      m={2}
+                    >
+                      <Box>{app.title || app.config.title}</Box>
+                      <Button
+                        onClick={() =>
+                          setAppOpen({
+                            insId: app.insId,
+                            open: true,
+                          })
+                        }
+                      >
+                        Switch
+                      </Button>
+                    </Flex>
+                  ))}
+                </Flex>
+              </>
+            )}
+            <Text>Open</Text>
+            <Flex direction="column" align="stretch">
+              {configs.map((conf) => (
+                <Flex
+                  key={conf.appId}
+                  justify="space-between"
+                  align="center"
+                  borderRadius="lg"
+                  borderColor="gray.200"
+                  borderWidth={1}
+                  p={2}
+                  m={2}
+                >
+                  <Box>{conf.title}</Box>
+                  <Button onClick={() => onLaunch(conf)}>Launch</Button>
+                </Flex>
+              ))}
+            </Flex>
           </Box>
-        )} */}
+        )}
+
+        {elems}
         <GlobalControl />
       </Box>
     </ChakraProvider>

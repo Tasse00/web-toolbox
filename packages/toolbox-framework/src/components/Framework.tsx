@@ -6,6 +6,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import ConfigProvider from "./ConfigProvider";
 import { Mobile } from "./Mobile/Layout";
 import PC from "./PC";
+import { BrowserView, MobileView } from "react-device-detect";
 
 export const Framework: React.FC<{
   defaultConfigs: AppConfig[];
@@ -65,8 +66,13 @@ export const Framework: React.FC<{
     >
       <ConfigProvider>
         <DndProvider backend={HTML5Backend}>
-          {/* <PC /> */}
-          <Mobile />
+          <BrowserView>
+            <PC />
+          </BrowserView>
+
+          <MobileView>
+            <Mobile />
+          </MobileView>
         </DndProvider>
       </ConfigProvider>
     </FrameworkContext.Provider>

@@ -1,5 +1,7 @@
 import {
   Box,
+  Button,
+  Flex,
   IconButton,
   Menu,
   MenuButton,
@@ -12,6 +14,7 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Spacer,
 } from "@chakra-ui/react";
 import {
   HamburgerIcon,
@@ -19,53 +22,92 @@ import {
   ExternalLinkIcon,
   RepeatIcon,
   EditIcon,
+  ArrowRightIcon,
 } from "@chakra-ui/icons";
-import React, { useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 
 import { useFocus } from "../../hooks/useFocus";
-import { Fade } from "@chakra-ui/react";
+import { FrameworkContext } from "../Framework";
 
 interface Props {}
 
 const GlobalControl: React.FC<Props> = (props) => {
   const [menuVis, setMenuVis] = useState(false);
-  const [ref, focused] = useFocus<HTMLDivElement>();
-  console.log(focused);
+  const [expanded, setExpanded] = useState(false);
+
+  const {
+    apps,
+    configs,
+    launchApp,
+    terminateApp,
+    resizeApp,
+    moveApp,
+    setAppInsTitle,
+    setAppOpen,
+    focusApp,
+    size,
+  } = useContext(FrameworkContext);
+
+  const currentApp = useMemo(() => {
+    let app = null;
+    for (const a of apps) {
+      if (app === null) {
+        app = a;
+      } else if (app.order <= a.order) {
+        app = a;
+      }
+    }
+    return app;
+  }, [apps]);
+
+  useEffect(() => {
+    if (expanded) {
+      const collapse = () => {
+        setExpanded(false);
+      };
+      document.addEventListener("click", collapse);
+      return () => document.removeEventListener("click", collapse);
+    }
+  }, [expanded]);
+
   return (
     <>
-      <Box
+      <Flex
+        onClick={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          setExpanded(true);
+          return false;
+        }}
         position="fixed"
-        left={focused ? 0 : -1}
-        bg="gray.200"
+        bg="gray.100"
         bottom="20%"
+        left={expanded ? 0 : -14}
+        // width={20}
+        // height={8}
         transitionProperty="left"
         transitionDuration="0.2s"
+        justify="right"
+        align="center"
+        p={2}
+        borderTopRightRadius="xl"
+        borderBottomRightRadius="xl"
       >
-        <Fade in={focused} ref={ref}>
-          <Menu>
-            <MenuButton
-              as={IconButton}
-              aria-label="Options"
-              icon={<HamburgerIcon />}
-              variant="outline"
-            />
-            <MenuList>
-              <MenuItem icon={<AddIcon />} command="⌘T">
-                New Tab
-              </MenuItem>
-              <MenuItem icon={<ExternalLinkIcon />} command="⌘N">
-                New Window
-              </MenuItem>
-              <MenuItem icon={<RepeatIcon />} command="⌘⇧N">
-                Open Closed Tab
-              </MenuItem>
-              <MenuItem icon={<EditIcon />} command="⌘O">
-                Open File...
-              </MenuItem>
-            </MenuList>
-          </Menu>
-        </Fade>
-      </Box>
+        <Button
+          colorScheme="blue"
+          size="xs"
+          mr={2}
+          variant="outline"
+          onClick={() => {
+            if (currentApp) {
+              setAppOpen({ insId: currentApp.insId, open: false });
+            }
+          }}
+        >
+          Dash
+        </Button>
+        <ArrowRightIcon color="gray.500" />
+      </Flex>
 
       <Modal isCentered isOpen={menuVis} onClose={() => setMenuVis(false)}>
         <ModalOverlay />

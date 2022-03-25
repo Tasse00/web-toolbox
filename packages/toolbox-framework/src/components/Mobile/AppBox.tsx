@@ -10,7 +10,7 @@ const AppBox: React.FC<Props> = ({ runtime }) => {
   const Com = runtime.config.component;
   const props = runtime.props;
   return (
-    <Box w="full" h="full">
+    <Box w="full" h={runtime.open ? "full" : 0} overflow="hidden">
       <Com {...props} />
     </Box>
   );

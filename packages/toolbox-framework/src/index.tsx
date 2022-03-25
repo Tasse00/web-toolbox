@@ -6,3 +6,4 @@ export { FrameworkContext, Framework } from "./components/Framework";
 export type { AppConfig } from "./components/Framework";
 export { useInterval } from "./common/hooks/timer";
 export { usePersistent } from "./common/providers/persistent/context";
+export { useI18n, I18nProvider } from "./i18n";
