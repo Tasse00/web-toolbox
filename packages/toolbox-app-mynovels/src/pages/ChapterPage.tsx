@@ -4,22 +4,30 @@ import {
   ArrowForwardIcon,
   ChevronLeftIcon,
   LinkIcon,
+  SettingsIcon,
 } from "@chakra-ui/icons";
 import {
   Alert,
   AlertIcon,
-  Button,
+  Box,
+  Drawer,
+  DrawerBody,
+  DrawerContent,
+  DrawerOverlay,
   Flex,
   IconButton,
   Skeleton,
   Text,
+  useBoolean,
+  VStack,
 } from "@chakra-ui/react";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Layout } from "toolbox-components";
+import { useAppConfig } from "toolbox-framework";
 import { openNewTab } from "toolbox-utils";
-import FlexPanel from "../components/FlexPanel";
-import { useNovel } from "../providers/NovelProvider";
+import { ChapterControl } from "../components/ChapterControl";
+import { ColorPicker } from "../components/ColorPicker";
+import { FontSizePicker } from "../components/FontSizePicker";
 import { useServices } from "../providers/ServiceProvider";
 
 const ChapterPage: React.FC<{}> = (props) => {
@@ -43,9 +51,44 @@ const ChapterPage: React.FC<{}> = (props) => {
     }
   }, [id]);
 
+  const [fullscreen, setFullscreen] = useState(false);
+  const transDur = "0.2s";
+
+  const prevDisabled = loading || !data || !data.prev_id;
+  const nextDisabled = loading || !data || !data.next_id;
+  const onPrev = () =>
+    setSearchParams({ id: (data?.prev_id || 0).toString() }, { replace: true });
+  const onNext = () =>
+    setSearchParams({ id: (data?.next_id || 0).toString() }, { replace: true });
+
+  const [settingsVis, setSettingsVis] = useBoolean(false);
+
+  const { value: fontColor, update: setFontColor } = useAppConfig(
+    "reader.fontColor",
+    "black"
+  );
+
+  const { value: bgColor, update: setBgColor } = useAppConfig(
+    "reader.bgColor",
+    "white"
+  );
+
+  const { value: fontSize, update: setFontSize } = useAppConfig(
+    "reader.fontSize",
+    "lg"
+  );
+
   return (
     <Flex h="100%" direction="column">
-      <Flex m={2} justify="space-between" align="center">
+      <Flex
+        justify="space-between"
+        align="center"
+        h={fullscreen ? 0 : 10}
+        m={fullscreen ? 0 : 2}
+        overflow="hidden"
+        transitionProperty="all"
+        transitionDuration={transDur}
+      >
         <IconButton
           aria-label="Back"
           icon={<ChevronLeftIcon />}
@@ -56,28 +99,35 @@ const ChapterPage: React.FC<{}> = (props) => {
           fontWeight="bold"
           fontSize={"lg"}
           color="black.500"
+          isTruncated={true}
         >
           {data ? data.title : ""}
         </Text>
+
         <IconButton
-          aria-label="View Source"
-          icon={<LinkIcon />}
-          disabled={loading}
-          onClick={() => {
-            if (data) {
-              openNewTab({ url: data.url });
-            }
-          }}
+          aria-label="reader settings"
+          icon={<SettingsIcon />}
+          onClick={setSettingsVis.on}
         />
       </Flex>
 
-      <FlexPanel
+      <Box
         ref={ref}
-        m={2}
-        mt={0}
-        direction="column"
+        px={2}
+        bg={bgColor}
+        transitionProperty="all"
+        transitionDuration={transDur}
         flex={1}
         overflow="auto"
+        css={{
+          "&::-webkit-scrollbar": {
+            width: "0px",
+          },
+          "&::-webkit-scrollbar-track": {
+            width: "0px",
+          },
+        }}
+        onClick={() => setFullscreen((v) => !v)}
       >
         {loading && (
           <Flex direction="column">
@@ -86,9 +136,14 @@ const ChapterPage: React.FC<{}> = (props) => {
             <Skeleton m={2} h={12} />
           </Flex>
         )}
-        {data &&
+        {!loading &&
+          data &&
           data.synced &&
-          data.lines.map((line, idx) => <Text key={idx}>{line}</Text>)}
+          data.lines.map((line, idx) => (
+            <Text fontSize={fontSize} color={fontColor} key={idx}>
+              {line}
+            </Text>
+          ))}
         {data && !data.synced && (
           <Alert status="info">
             <AlertIcon />
@@ -101,40 +156,69 @@ const ChapterPage: React.FC<{}> = (props) => {
             Failed to fetch chapter.
           </Alert>
         )}
-      </FlexPanel>
 
-      <Flex m={2} mt={0} columnGap={2}>
-        <IconButton
-          flex={1}
-          size="sm"
-          aria-label="Prev"
-          icon={<ArrowBackIcon />}
-          disabled={loading || !data || !data.prev_id}
-          onClick={() =>
-            setSearchParams(
-              { id: (data?.prev_id || 0).toString() },
-              { replace: true }
-            )
-          }
-        >
-          Prev
-        </IconButton>
-        <IconButton
-          flex={1}
-          size="sm"
-          aria-label="Next"
-          icon={<ArrowForwardIcon />}
-          disabled={loading || !data || !data.next_id}
-          onClick={() =>
-            setSearchParams(
-              { id: (data?.next_id || 0).toString() },
-              { replace: true }
-            )
-          }
-        >
-          Next
-        </IconButton>
-      </Flex>
+        {!error && !loading && (
+          <ChapterControl
+            transitionProperty="all"
+            transitionDuration={transDur}
+            my={!fullscreen ? 0 : 2}
+            h={!fullscreen ? 0 : 10}
+            prevDisabled={prevDisabled}
+            nextDisabled={nextDisabled}
+            onPrev={onPrev}
+            onNext={onNext}
+          />
+        )}
+      </Box>
+
+      <ChapterControl
+        transitionProperty="all"
+        transitionDuration={transDur}
+        m={fullscreen ? 0 : 2}
+        h={fullscreen ? 0 : 10}
+        prevDisabled={prevDisabled}
+        nextDisabled={nextDisabled}
+        onPrev={onPrev}
+        onNext={onNext}
+      />
+
+      <Drawer
+        isOpen={settingsVis}
+        placement="bottom"
+        onClose={setSettingsVis.off}
+      >
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerBody maxH={80} overflow="auto">
+            <VStack gap={2} m={2} align="stretch">
+              <Flex justify="space-between" align="center">
+                <Text>View Source</Text>
+                <IconButton
+                  aria-label="View Source"
+                  icon={<LinkIcon />}
+                  disabled={loading}
+                  onClick={() => data && openNewTab({ url: data.url })}
+                />
+              </Flex>
+
+              <Flex justify="space-between" align="center">
+                <Text>Font Color</Text>
+                <ColorPicker value={fontColor} onChange={setFontColor} />
+              </Flex>
+
+              <Flex justify="space-between" align="center">
+                <Text>Background</Text>
+                <ColorPicker value={bgColor} onChange={setBgColor} />
+              </Flex>
+
+              <Flex justify="space-between" align="center">
+                <Text>Font Size</Text>
+                <FontSizePicker value={fontSize} onChange={setFontSize} />
+              </Flex>
+            </VStack>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </Flex>
   );
 };

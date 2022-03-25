@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/js-md5": "^0.4.3",
     "copyfiles": "^2.4.1",
     "typescript": "^4.5.4"
   },
@@ -24,6 +25,7 @@
     "@emotion/styled": "^11",
     "antd": "^4.18.0",
     "framer-motion": "^6",
+    "js-md5": "^0.7.3",
     "react": "^17.0.2",
     "react-router-dom": "6",
     "toolbox-components": "workspace:../toolbox-components",

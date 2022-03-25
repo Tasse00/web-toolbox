@@ -4,7 +4,7 @@ import {
   SpinnerIcon,
   WarningIcon,
 } from "@chakra-ui/icons";
-import { Center, Text, Tooltip } from "@chakra-ui/react";
+import { Center, Spinner, Text, Tooltip } from "@chakra-ui/react";
 import React from "react";
 import { NovelInfo, SyncStatusEnum } from "../providers/ServiceProvider";
 interface Props {
@@ -49,7 +49,8 @@ export const SyncStatus: React.FC<Props> = ({
       return (
         <Center>
           <Text mr={1}>{progress}%</Text>
-          <SpinnerIcon boxSize={size} color="green.200" />
+          {/* <SpinnerIcon boxSize={size} color="green.200" /> */}
+          <Spinner color="teal" />
         </Center>
       );
     default:

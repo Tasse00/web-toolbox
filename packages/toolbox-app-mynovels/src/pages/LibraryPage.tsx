@@ -1,13 +1,24 @@
 import useRequest from "@ahooksjs/use-request";
-import { ArrowLeftOutlined } from "@ant-design/icons";
-import { Alert, Image, Button, Input, List, Skeleton, Typography } from "antd";
-import React from "react";
+import { Search2Icon } from "@chakra-ui/icons";
 import {
-  createSearchParams,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+  Alert,
+  AlertIcon,
+  AspectRatio,
+  Box,
+  Flex,
+  IconButton,
+  Image,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Skeleton,
+  Text,
+} from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "toolbox-components";
+import { useI18n } from "toolbox-framework";
+import { ListSkeleton } from "../components/ListSkeleton";
 import { SyncStatusMap } from "../consts";
 import { usePages } from "../hooks";
 import { useServices } from "../providers/ServiceProvider";
@@ -15,6 +26,7 @@ import { useServices } from "../providers/ServiceProvider";
 const LibraryPage: React.FC<{}> = (props) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { searchSync } = useServices();
+  const [t] = useI18n();
   const navigate = useNavigate();
   const pages = usePages();
   const keyword = searchParams.get("keyword") || "";
@@ -24,97 +36,93 @@ const LibraryPage: React.FC<{}> = (props) => {
       refreshDeps: [keyword, searchSync],
     }
   );
+  const [iptVal, setIptVal] = useState(keyword);
+  useEffect(() => {
+    setIptVal(keyword);
+  }, [keyword]);
 
   return (
     <Layout
       bar={
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <Input.Search
-            placeholder="search"
-            defaultValue={keyword}
-            onSearch={(keyword) => setSearchParams({ keyword })}
-          />
-        </div>
+        <Flex align="center">
+          <InputGroup>
+            <Input
+              placeholder={t("app.mynovels.library.search")}
+              value={iptVal}
+              borderRadius={0}
+              onChange={(e) => setIptVal(e.target.value)}
+            />
+            <InputRightElement>
+              <IconButton
+                aria-label="search"
+                icon={<Search2Icon />}
+                size="sm"
+                onClick={() => setSearchParams({ keyword: iptVal })}
+              />
+            </InputRightElement>
+          </InputGroup>
+        </Flex>
       }
+      contentStyle={{ overflow: "auto" }}
     >
-      {!loading && !error && data === undefined && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 32,
-          }}
-        >
-          {"Input & Search"}
-        </div>
-      )}
+      <Box p={2}>
+        {!loading && !error && data === undefined && (
+          <Flex justify="center" align="center">
+            {t("app.mynovels.library.guide")}
+          </Flex>
+        )}
 
-      {!loading && !error && data && data.length === 0 && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 32,
-          }}
-        >
-          {"No result In Synced Novels, Try 'Union Search'"}
-        </div>
-      )}
-      {!loading && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-around",
-            flexWrap: "wrap",
-          }}
-        >
-          {(data || []).map((novel) => (
-            <div
-              style={{
-                padding: 8,
-                margin: 8,
-                backgroundColor: "rgba(220,220,220,0.2)",
-                borderRadius: 12,
-              }}
-              onClick={() => {
-                console.log(novel.id.toString());
-                pages.Novel.go(navigate, { id: novel.id.toString() });
-              }}
-            >
-              <Image width={180} height={240} src={novel.img} preview={false} />
-              <div style={{ display: "flex", alignItems: "center" }}>
-                <Typography.Text style={{ flex: 1 }}>
-                  {novel.title}
-                </Typography.Text>
-                <Typography.Text type="secondary">
-                  {novel.author}
-                </Typography.Text>
-              </div>
+        {!loading && !error && data && data.length === 0 && (
+          <Flex justify="center" align="center">
+            {t("app.mynovels.library.empty")}
+          </Flex>
+        )}
+        {!loading && (
+          <Flex wrap="wrap" justifyContent="space-around">
+            {(data || []).map((novel) => (
+              <Box key={novel.id} w="50%">
+                <Box
+                  p={2}
+                  m={1}
+                  bg="gray.100"
+                  borderRadius="lg"
+                  onClick={() => {
+                    pages.Novel.go(navigate, { id: novel.id.toString() });
+                  }}
+                >
+                  <AspectRatio ratio={0.75}>
+                    <Image width="full" height="full" src={novel.img} />
+                  </AspectRatio>
+                  <Flex align="center">
+                    <Text flex={1} isTruncated>
+                      {novel.title}
+                    </Text>
+                    <Text color="gray.500" isTruncated>
+                      {novel.author}
+                    </Text>
+                  </Flex>
 
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  width: 180,
-                }}
-              >
-                <Typography.Text type="secondary">
-                  {novel.source}
-                </Typography.Text>
-                <Typography.Text type="secondary">
-                  {SyncStatusMap[novel.sync_status]}
-                </Typography.Text>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+                  <Flex justify="space-between" align="center">
+                    <Text color="gray.500" isTruncated>
+                      {novel.source}
+                    </Text>
+                    <Text color="gray.500" isTruncated>
+                      {SyncStatusMap[novel.sync_status]}
+                    </Text>
+                  </Flex>
+                </Box>
+              </Box>
+            ))}
+          </Flex>
+        )}
 
-      {loading && <Skeleton />}
-      {!loading && error && <Alert type="error" message={error.message} />}
+        {loading && <ListSkeleton />}
+        {!loading && error && (
+          <Alert status="error">
+            <AlertIcon /> {error.message}
+          </Alert>
+        )}
+      </Box>
     </Layout>
   );
 };

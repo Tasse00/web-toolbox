@@ -1,21 +1,24 @@
 import useRequest from "@ahooksjs/use-request";
-import {
-  Alert,
-  Button,
-  Divider,
-  Image,
-  Input,
-  Modal,
-  Skeleton,
-  Typography,
-} from "antd";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Layout } from "toolbox-components";
 import { useServices } from "../providers/ServiceProvider";
-import { ArrowLeftOutlined } from "@ant-design/icons";
-import { SyncStatusMap } from "../consts";
 import { usePages } from "../hooks";
+import { CandidateItem } from "../components/CandidateItem";
+import { ListSkeleton } from "../components/ListSkeleton";
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  Flex,
+  IconButton,
+  Input,
+  InputGroup,
+  InputRightElement,
+  Skeleton,
+} from "@chakra-ui/react";
+import { Search2Icon } from "@chakra-ui/icons";
+import { useI18n } from "toolbox-framework";
 
 const UnionSearchPage: React.FC<{}> = (props) => {
   const navigate = useNavigate();
@@ -51,141 +54,66 @@ const UnionSearchPage: React.FC<{}> = (props) => {
     }
   }, []);
 
+  const [iptVal, setIptVal] = useState(keyword);
+  useEffect(() => {
+    setIptVal(keyword);
+  }, [keyword]);
+  const [t] = useI18n();
   return (
     <Layout
       bar={
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <Input.Search
-            placeholder="search"
-            defaultValue={keyword}
-            onSearch={(v) => {
-              if (v.length > 0) {
-                search(v);
-              }
-              // setSearchParams({
-              //   keyword: v,
-              // });
-            }}
-          />
-        </div>
-      }
-    >
-      {!loading && !error && data === undefined && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 32,
-          }}
-        >
-          {"Input & Search"}
-        </div>
-      )}
-
-      {!loading && !error && data && data.length === 0 && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: 32,
-          }}
-        >
-          {"No result"}
-        </div>
-      )}
-      {!loading && (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-around",
-            flexWrap: "wrap",
-          }}
-        >
-          {(data || []).map((candidate) => (
-            <div
-              style={{
-                padding: 8,
-                margin: 8,
-                backgroundColor: "rgba(220,220,220,0.2)",
-                borderRadius: 12,
-              }}
-              onClick={() => {
-                if (candidate.local) {
-                  pages.Novel.go(navigate, {
-                    id: candidate.local.id.toString(),
-                  });
-                }
-              }}
-            >
-              <Image
-                width={180}
-                height={240}
-                placeholder="No Image"
-                src={""}
-                preview={false}
-              />
-              <div
-                style={{ display: "flex", alignItems: "center", width: 180 }}
-              >
-                <Typography.Text
-                  style={{
-                    flex: 1,
-                    whiteSpace: "nowrap",
-                    textOverflow: "ellipsis",
-                    overflow: "hidden",
-                    wordBreak: "break-all",
-                  }}
-                >
-                  {candidate.title}
-                </Typography.Text>
-                <Typography.Text type="secondary">
-                  {candidate.author}
-                </Typography.Text>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  width: 180,
+        <Flex align="center">
+          <InputGroup>
+            <Input
+              placeholder={t("app.mynovels.union.search")}
+              value={iptVal}
+              borderRadius={0}
+              onChange={(e) => setIptVal(e.target.value)}
+            />
+            <InputRightElement>
+              <IconButton
+                aria-label="search"
+                icon={<Search2Icon />}
+                size="sm"
+                onClick={() => {
+                  if (iptVal.trim().length > 0) {
+                    search(iptVal.trim());
+                  }
                 }}
-              >
-                <Typography.Text type="secondary">
-                  {candidate.source}
-                </Typography.Text>
-                {candidate.local ? (
-                  <Typography.Text type="secondary">
-                    {SyncStatusMap[candidate.local.sync_status]}
-                  </Typography.Text>
-                ) : (
-                  <Button
-                    size="small"
-                    type="primary"
-                    onClick={() => run(candidate.source, candidate.url)}
-                  >
-                    Sync
-                  </Button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+              />
+            </InputRightElement>
+          </InputGroup>
+        </Flex>
+      }
+      contentStyle={{ overflow: "auto" }}
+    >
+      <Box p={2}>
+        {!loading && !error && data === undefined && (
+          <Flex justify="center" align="center">
+            {t("app.mynovels.union.guide")}
+          </Flex>
+        )}
 
-      {loading && <Skeleton />}
-      {!loading && error && <Alert type="error" message={error.message} />}
+        {!loading && !error && data && data.length === 0 && (
+          <Flex justify="center" align="center">
+            {t("app.mynovels.union.empty")}
+          </Flex>
+        )}
+        {!loading && (
+          <Flex direction="column" align="stretch" gap={2} p={2}>
+            {(data || []).map((candidate) => (
+              <CandidateItem key={candidate.url} {...candidate} />
+            ))}
+          </Flex>
+        )}
 
-      <Modal
-        visible={starting}
-        maskClosable={false}
-        footer={false}
-        closable={false}
-      >
-        Starting to sync novel...
-      </Modal>
+        {loading && <ListSkeleton />}
+        {!loading && error && (
+          <Alert status="error">
+            <AlertIcon /> {error.message}
+          </Alert>
+        )}
+      </Box>
     </Layout>
   );
 };
