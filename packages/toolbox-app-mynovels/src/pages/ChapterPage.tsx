@@ -78,55 +78,70 @@ const ChapterPage: React.FC<{}> = (props) => {
     "lg"
   );
 
+  const TopHeightWidthMargin = 14;
+  const BottomHeightWidthMargin = 14;
+
   return (
     <Flex h="100%" direction="column">
-      <Flex
-        justify="space-between"
-        align="center"
-        h={fullscreen ? 0 : 10}
-        m={fullscreen ? 0 : 2}
-        overflow="hidden"
+      <Box
+        position="fixed"
+        top={0}
         transitionProperty="all"
         transitionDuration={transDur}
+        bg={fullscreen ? "rgba(255,255,255,0)" : "white"}
+        w="full"
+        h={TopHeightWidthMargin}
       >
-        <IconButton
-          aria-label="Back"
-          icon={<ChevronLeftIcon />}
-          onClick={() => navigate(-1)}
-        />
-        <Text
+        <Flex
+          justify="space-between"
           align="center"
-          fontWeight="bold"
-          fontSize={"lg"}
-          color="black.500"
-          isTruncated={true}
+          h={fullscreen ? 0 : 10}
+          m={fullscreen ? 0 : 2}
+          overflow="hidden"
+          transitionProperty="all"
+          transitionDuration={transDur}
         >
-          {data ? data.title : ""}
-        </Text>
+          <IconButton
+            aria-label="Back"
+            icon={<ChevronLeftIcon />}
+            onClick={() => navigate(-1)}
+          />
+          <Text
+            align="center"
+            fontWeight="bold"
+            fontSize={"lg"}
+            color="black.500"
+            isTruncated={true}
+          >
+            {data ? data.title : ""}
+          </Text>
 
-        <IconButton
-          aria-label="reader settings"
-          icon={<SettingsIcon />}
-          onClick={setSettingsVis.on}
-        />
-      </Flex>
+          <IconButton
+            aria-label="reader settings"
+            icon={<SettingsIcon />}
+            onClick={setSettingsVis.on}
+          />
+        </Flex>
+      </Box>
 
       <Box
+        mt={fullscreen ? 0 : TopHeightWidthMargin}
+        mb={fullscreen ? 0 : BottomHeightWidthMargin}
         ref={ref}
         px={2}
         bg={bgColor}
         transitionProperty="all"
         transitionDuration={transDur}
         flex={1}
-        overflow="auto"
-        css={{
-          "&::-webkit-scrollbar": {
-            width: "0px",
-          },
-          "&::-webkit-scrollbar-track": {
-            width: "0px",
-          },
-        }}
+        // overflow="auto"
+        // css={{
+        //   "&::-webkit-scrollbar": {
+        //     width: "0px",
+        //   },
+        //   "&::-webkit-scrollbar-track": {
+        //     width: "0px",
+        //   },
+        // }}
         onClick={() => setFullscreen((v) => !v)}
       >
         {loading && (
@@ -171,16 +186,32 @@ const ChapterPage: React.FC<{}> = (props) => {
         )}
       </Box>
 
-      <ChapterControl
+      <Flex
+        h={fullscreen ? 0 : BottomHeightWidthMargin}
+        position="fixed"
+        w="full"
+        justify="center"
+        align="center"
+        bottom={0}
         transitionProperty="all"
         transitionDuration={transDur}
-        m={fullscreen ? 0 : 2}
-        h={fullscreen ? 0 : 10}
-        prevDisabled={prevDisabled}
-        nextDisabled={nextDisabled}
-        onPrev={onPrev}
-        onNext={onNext}
-      />
+        bg={fullscreen ? "rgba(255,255,255,0)" : "white"}
+        overflow="hidden"
+      >
+        <ChapterControl
+          // w="full"
+          transitionProperty="all"
+          transitionDuration={transDur}
+          // m={fullscreen ? 0 : 2}
+          m={2}
+          flex={1}
+          // p={2}
+          prevDisabled={prevDisabled}
+          nextDisabled={nextDisabled}
+          onPrev={onPrev}
+          onNext={onNext}
+        />
+      </Flex>
 
       <Drawer
         isOpen={settingsVis}
